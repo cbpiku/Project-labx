@@ -740,14 +740,15 @@ const apple = new Vue({
         watch: {
     	'code': function(val, oldVal){
       	     if (this.code == this.server_code) {
-        	       document.getElementById("save_status").style.background = "green";
-                   this.wbench_save_status = 1;    
+                document.getElementById("save_status").style.background = "green";
+                this.wbench_save_status = 1;
+                document.getElementById("build_status").style.background = "grey";
             }else{
-            document.getElementById("save_status").style.background = "red";
-            this.wbench_save_status = 0; // needs saving
-             this.wbench_build_status = 0; //need to be build
-             document.getElementById("build_status").style.background = "grey";
-             document.getElementById("check_status").style.background = "grey";       
+                document.getElementById("save_status").style.background = "red";
+                document.getElementById("build_status").style.background = "#333";
+                document.getElementById("check_status").style.background = "#333";       
+                this.wbench_save_status = 0; // needs saving
+                this.wbench_build_status = 0; // needs build
             }
          }
         },
@@ -1069,29 +1070,26 @@ const apple = new Vue({
             this.pre_command = this.command;
             //this.command = ""; //clearing the commandbox
         },
-            
-            
+  
         wbench_save() {
-        document.getElementById("save_status").style.display = "none";
-        document.getElementById("save_loader").style.display = "inline-block";    
-        this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_save', [login.$data.key,this.active_file,this.code]))).then(response => {
-        document.getElementById("save_loader").style.display = "none";
-        document.getElementById("save_status").style.background = "green";
-        document.getElementById("save_status").style.display = "inline-block";    
-        })
-        //FIXME document.getElementById("save_status").style.background = "green";     
+            document.getElementById("save_status").style.display = "none";
+            document.getElementById("save_loader").style.display = "inline-block";    
+            this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_save', [login.$data.key,this.active_file,this.code]))).then(response => {
+            document.getElementById("save_loader").style.display = "none";
+            document.getElementById("save_status").style.background = "green";
+            document.getElementById("save_status").style.display = "inline-block";
+            this.wbench_save_status = 1;
+            document.getElementById("build_status").style.background = "grey";
+            })
         },    
             
-        wbench_build(flag) {
+        wbench_build() {
+            if(this.wbench_save_status == 0) {
+            return
+            }
             document.getElementById("build_status").style.display = "none";
             document.getElementById("build_loader").style.display = "inline-block";
-            if(this.wbench_save_status == 0) {
-            this.wbench_save();
-            }
-            
             this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_build', [login.$data.key]))).then(response => { console.log(response);
-                //console.log(response);
-                //alert("Build Complete");
                this.errors.length = 0;
                this.build.length = 0;
                var annotations = this.editor.getSession().getAnnotations();
@@ -1112,59 +1110,46 @@ const apple = new Vue({
                     this.wbench_build_status = 1; // Build Passed.
                     this.errors.pop(); //Vuejs - updates DOM only on array manuplation.
                     this.editor.getSession().clearAnnotations()
-                        if(flag == 'check'){
-                            this.wbench_check();
-                        }
+                    document.getElementById("check_status").style.background = "grey";    
                     }
                     else if ( build_status == '0' ){
                     document.getElementById("build_status").style.display = "inline-block";
                     document.getElementById("build_status").style.background = "red";
                     document.getElementById("build_loader").style.display = "none";
-                    
-                    document.getElementById("check_status").style.display = "inline-block";
-                    document.getElementById("check_status").style.background = "grey";
-                    document.getElementById("check_loader").style.display = "none";      
+                    document.getElementById("check_status").style.background = "#333";
                     this.wbench_build_status = -1; //Build Failed, with errors.
                     
+                    var error_icon = "error";
                     for (errors in this.build){
                         if (this.build[errors][1] != null){
                             this.errors.push(this.build[errors][1]);
-                            var hack;
                             if (this.build[errors][1].type != "error") {
-                              icon = "warning"   
-                            } else {
-                                icon = this.build[errors][1].type;
+                                error_icon = "warning";
                             }
-                            
-                        annotations.push({
-                            row:  this.build[errors][1].line - 1,
-                            column: 0, 
-                            text: this.build[errors][1].message,
-                            type: icon,
-                        });    
-                        }
-                        }
-                    // alert(JSON.stringify(annotations))    
-                        this.editor.getSession().setAnnotations(annotations);   
-                        this.select_build_output()
+                            annotations.push({
+                                row:  this.build[errors][1].line - 1,
+                                column: 0, 
+                                text: this.build[errors][1].message,
+                                type: error_icon,
+                            });    
+                            }
+                        }    
+                    this.editor.getSession().setAnnotations(annotations);   
+                    this.select_build_output()
                     }
                 //this.select_file()
             })
         },
 
         wbench_check() {
-        document.getElementById("check_status").style.display = "none";
-        document.getElementById("check_loader").style.display = "inline-block";
-        if (this.wbench_build_status == 0) {
-            this.wbench_build('check');
-        } else if (this.wbench_build_status == -1) {
-            document.getElementById("check_status").style.display = "inline-block";
-            document.getElementById("check_status").style.background = "grey";
-            document.getElementById("check_loader").style.display = "none";   
-            return      
-        }
-        
-        if (this.wbench_build_status == 1) {
+            if (this.wbench_build_status == 0) {
+                return
+            } else if (this.wbench_build_status == -1) {
+                return   
+            }
+            document.getElementById("check_status").style.display = "none";
+            document.getElementById("check_loader").style.display = "inline-block";
+            if (this.wbench_build_status == 1) {
             this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_check', [login.$data.key]))).then(response => { 
                     console.log(response);
                     var text = response.data;
@@ -1176,7 +1161,6 @@ const apple = new Vue({
                         document.getElementById("check_status").style.display = "inline-block";
                         document.getElementById("check_status").style.background = "green";
                         document.getElementById("check_loader").style.display = "none";    
-                        //alert("Sucess !!");
                         document.getElementById('info').style.display='block';      
                     }
                     else if (check == '0') {
@@ -1186,8 +1170,7 @@ const apple = new Vue({
                         alert("Check Failed");
                         this.select_file();    
                     }            
-                })   
-            //alert("Running Test") 
+                }) 
             }
         },
             
