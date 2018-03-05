@@ -365,7 +365,7 @@
             
             
             </a></li>
-        <li class="menu" style="float:right"><a v-on:click="wbench_restore_task">Reset&nbsp;&nbsp;</a></li>
+        <li class="menu" style="float:right"><a v-on:click="wbench_restore_task">Restore&nbsp;</a></li>
 
         <div class="dropdown">
             <button class="dropbtn">File <i class="fa fa-caret-down"></i></button>
@@ -496,8 +496,7 @@ const apple = new Vue({
       el: '#modules',
       data: {
       page : false,
-      websoc_state: false,      
-      autoload : true,
+      websoc_state: false,
       lcd: '',
       },
       methods: {    
@@ -571,8 +570,6 @@ const apple = new Vue({
               
             total_tasks: 0,
             tasks_list: 0,
-            autoload: true,
-              
             refresh_task: true,
           },
           methods : {
@@ -690,11 +687,6 @@ const apple = new Vue({
           workspace.$data.testings = true;
           workspace.wb_load(); 
           workspace.ace_settings();
-            
-          if (this.autoload == true) {
-            this.autoload = false;  
-            workspace.wb_reset();
-            }
         },
               
           }
@@ -852,6 +844,7 @@ const apple = new Vue({
             fontSize: "12.5pt",
             display: "none",
             useWorkers: false,
+            showPrintMargin: true,
         });
         this.editor.on('change', () => {
             this.code = this.editor.getValue()
@@ -880,7 +873,9 @@ const apple = new Vue({
             workspace.wbench_check();
             },
             readOnly: false // false if this command should not apply in readOnly mode
-        })    
+        })
+        this.editor.$blockScrolling = Infinity;
+
           },
             
         update_board(){
@@ -950,10 +945,22 @@ const apple = new Vue({
         /*FIXED -- FILE PROPERTY */
         if(this.file_permission_info[this.active_file] == true ){
             this.editor.setReadOnly(true);
+            this.editor.renderer.$cursorLayer.element.style.display = "none";
+            this.editor.setOptions({
+            highlightActiveLine: false, 
+            highlightGutterLine: false,
+            });
+            
         } else {
             this.editor.setReadOnly(false);
+            this.editor.renderer.$cursorLayer.element.style.display = "inline-block";
+            this.editor.setOptions({
+            highlightActiveLine: true, 
+            highlightGutterLine: true,
+            });
+            this.editor.navigateLineStart() 
+            this.editor.gotoLine(1, 0, true);
         }
-        this.editor.gotoLine(1, 0, true);
         })
         },
 
@@ -981,13 +988,12 @@ const apple = new Vue({
                     this.select_file();
                     this.ace_clear_undo();
                     this.select_objective();
-          })
-            
+                    this.wb_reset();
+          })    
         },
-            
+
         wb_reset() {
             this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_reset', [login.$data.key]))).then(response => { console.log(response);
-                this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_run_command', [login.$data.key, this.tobase64('\n')]))).then(response => this.buffer)
             })
         },
 

@@ -878,13 +878,14 @@ textarea::-webkit-scrollbar {
 }
 
 .dropdown .dropbtn {
-    font-size: 20px;    
+    font-size: 2.2vh;    
     border: none;
     outline: none;
     color: white;
     padding: 5px 16px;
     background-color: inherit;
-    font-family: 'Rochester', cursive;
+    font-family: 'Poiret One', cursive;
+    font-weight: bold;
 }
 
 .navbar a:hover, .dropdown:hover .dropbtn {
@@ -1550,7 +1551,7 @@ color: #333;
 }                                                                                                         
 .ace-kuroir .ace_print-margin {                                  
 width: 1px;                         
-background: lightgrey !important                                           
+background: lightgrey !important;                                           
 }                                
 
 .ace-kuroir {                   
