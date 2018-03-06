@@ -497,13 +497,13 @@ const apple = new Vue({
       data: {
       page : false,
       websoc_state: false,
-      lcd: '',
       },
       methods: {    
       select_module() { 
           //-------------------------- # WebSoc # ------------------------
           if (this.websoc_state == false) {
-          this.websoc_state = true;  
+          this.websoc_state = true;
+          var lcd_state = false;
           var ws = new WebSocket(ws_url);
           ws.onopen = function (event) {
              // alert('' + login.$data.key + '');
@@ -513,11 +513,9 @@ const apple = new Vue({
              var wsevent_data = JSON.parse(event.data);
               
               if (wsevent_data.type == 'leds') {
-                  //alert("led_event_detected");
                 var object = document.getElementById("board");
                 var svgDocument = object.contentDocument;
                 var led = 'led' + wsevent_data.index;  
-                /*alert('' + led + '');*/
                 var svgled = svgDocument.getElementsByClassName(led);
                 if (wsevent_data.value == true) {
                     svgled[0].style.fill = "#ff3232" ;
@@ -525,11 +523,50 @@ const apple = new Vue({
                     svgled[0].style.fill = "#b3b3b3" ;
                 }
               }
-              
+
               if (wsevent_data.type == 'terminal') { 
                 workspace.$data.printscreen = workspace.$data.printscreen +   wsevent_data.append;
                 $("#window").animate({ scrollTop: $("#terminalp").height() }, 10);
              }
+              
+              if (wsevent_data.type == 'lcd'){
+                   console.log(wsevent_data);
+                    var object = document.getElementById("board");
+                    var svgDocument = object.contentDocument;
+              
+                  if (lcd_state == false ) {
+                    var svgbl = svgDocument.getElementsByClassName("lcd_bl");
+                    svgbl[0].style.fill = "#afe9af";
+                    lcd_state = true;
+                    }
+                    var lcd_data = wsevent_data.display;
+                    var cursor = wsevent_data.cursor;
+        
+                    var data_lcd0 = wsevent_data.display[0].split("");
+                    var data_lcd1 = wsevent_data.display[1].split("");
+                    var data_lcd2 = wsevent_data.display[2].split("");
+                    var data_lcd3 = wsevent_data.display[3].split("");
+                  
+                    var arr_data = [data_lcd0, data_lcd1, data_lcd2, data_lcd3];
+                    arr_data[cursor[0]][cursor[1]] = '█';
+                   
+                    var lcd_l0 = Array.prototype.join.call(data_lcd0, "");
+                    var lcd_l1 = Array.prototype.join.call(data_lcd1, "");
+                    var lcd_l2 = Array.prototype.join.call(data_lcd2, "");
+                    var lcd_l3 = Array.prototype.join.call(data_lcd3, "");
+                    
+                    var svglcd = svgDocument.getElementsByClassName("lcd_l0");
+                    svglcd[0].textContent = lcd_l0;
+                  
+                    svglcd = svgDocument.getElementsByClassName("lcd_l1");
+                    svglcd[0].textContent = lcd_l1;
+                  
+                    svglcd = svgDocument.getElementsByClassName("lcd_l2");
+                    svglcd[0].textContent = lcd_l2;
+                  
+                    svglcd = svgDocument.getElementsByClassName("lcd_l3");
+                    svglcd[0].textContent = lcd_l3;
+              }
           } 
           }
         //----------------------------------------------------------------- 
@@ -633,7 +670,6 @@ const apple = new Vue({
             get_prev_task(){    
             },
             
-        
               get_tasks() {
           this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('get_tasks', [login.$data.key, 'ldd']))).then(response => {
           console.log(response)    
@@ -709,7 +745,6 @@ const apple = new Vue({
         active_file: '',
         show_led: false,
         plus: "Device",
-        lcd_data: "",
         obj_task: [{}],
         task_file_list: [{}],
         wbench_save_status: 0,
@@ -1038,15 +1073,14 @@ const apple = new Vue({
             if (this.command == "lcd_data") {
                 var object = document.getElementById("board");
                 var svgDocument = object.contentDocument;
-                var svgb1 = svgDocument.getElementsByClassName("lcd_data");
-                svgb1[0].textContent = " Now you see Me ! Hah!" ;
-                svgb1[0].textContent = "123456789012345678901234567890" ;
+                var svgb1 = svgDocument.getElementsByClassName("lcd_l0");
+                svgb1[0].textContent = "Now you see Me !" ;
             }
             if (this.command == "lcd") {
                 var object = document.getElementById("board");
                 var svgDocument = object.contentDocument;
-                var svgb1 = svgDocument.getElementsByClassName("lcd_bl");
-                svgb1[0].style.fill = "#afe9af" ;
+                var svgbl = svgDocument.getElementsByClassName("lcd_bl");
+                svgbl[0].style.fill = "#afe9af" ;
             }
             if (this.command == "led1") {
                 var object = document.getElementById("board");
@@ -1181,12 +1215,10 @@ const apple = new Vue({
         },
             
         wbench_restore_task() {
-          alert(''+ login.$data.key + ' -- ' + modal.$data.selected_task + '' )
-          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,'ldd',modal.$data.selected_task]))).then(response => {
-              
+          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,'ldd',modal.$data.selected_task]))).then(response => {  
               console.log(response);
               workspace.wb_load(); 
-          });        
+          });
         },
 
        wbench_set_key(gpio_key, state) {
