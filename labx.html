@@ -21,9 +21,8 @@
     <link rel="stylesheet" href="offline/offline-theme-slide.css" />
     <link rel="stylesheet" href="offline/offline-language-english.css" />
     <script src="offline/offline.min.js"></script>
-      
+      <!--
     <script language="JavaScript">
-   /* <!--
         window.onbeforeunload = bunload;
         function bunload(){
             return "Are you Sure ?"
@@ -33,8 +32,8 @@
         Offline.check()
         }
         setInterval(run, 7000);
-        //--> */
-    </script>   
+        
+    </script> -->  
   </head>
 
   <body>
@@ -361,9 +360,6 @@
         <div class="sk-circle12 sk-circle"></div>
             </div>
             
-            
-            
-            
             </a></li>
         <li class="menu" style="float:right"><a v-on:click="wbench_restore_task">Restore&nbsp;</a></li>
 
@@ -406,7 +402,7 @@
                <ul class="tab" >
                    <li id="objective" class="menu" style="
                     float:left; 
-                    width:50%;
+                    width:33.33%;
                     font-size: 2vh;
                     font-weight: bold;
                     font-family: 'Poiret One', cursive;"
@@ -414,13 +410,22 @@
                    
                    <li id="build_output" class="menu" style="
                     float:left; 
-                    width:50%;
+                    width:33.33%;
                     font-size: 2vh;
                     font-weight: bold;
                     font-family: 'Poiret One', cursive;"
                    ><a v-on:click="select_build_output">Build Output&nbsp;&nbsp; </a></li>
                    
-               </ul>   
+                   <li id="check_result" class="menu" style="
+                    float:left; 
+                    width:33.33%;
+                    font-size: 2vh;
+                    font-weight: bold;
+                    font-family: 'Poiret One', cursive;"
+                   ><a v-on:click="select_check_result">Check Results&nbsp;&nbsp; </a></li>
+                   
+               </ul>
+                <div id="output_content">  
               <div id="objective_content" v-show=show_task_objective>
                   <div id="goal_table">
                 <div id="goal">
@@ -438,24 +443,47 @@
     <th>Description</th>
   </tr>
   
-  <tr v-for="(value,key) in errors" align='center' 
+  <tr v-if=update_build v-for="(value,key) in errors" align='center' 
       v-on:click="
              selected_error = errors[key].message;
              selected_error_line = errors[key].line;
              selected_error_index = key;
-             al()" > 
+             set_marker()" > 
      <td>{{ errors[key].type }}</td>
     <td>{{ errors[key].filename }}</td>
     <td>{{ errors[key].line }}:{{ errors[key].col }}</td>
     <td align="left">{{ errors[key].message }}</td>
   </table>
-    </div>              
+    </div> 
                   
+    <div v-if=show_check_result>         
+    <table class="check" v-for="(value,case_index) in check" style="width:100%" align='center'>
+        <tr v-if="update_check" class="check" align='left' v-on:click="case_info[case_index]=!case_info[case_index]">
+            <th :class="check[case_index].status"><img v-if=case_info[case_index] src="images/plus.png" width="18vh"><img v-if=!case_info[case_index] src="images/minus.png" width="18vh">  {{ check[case_index].name }}</th>
+            <th :class="check[case_index].status"></th>
+            <th :class="check[case_index].status" align='right'>{{ check[case_index].status }}</th>    
+        </tr>
+    
+        <tr :class="check[case_index].steps[step_index].status"  v-if="case_info[case_index]" v-for="(value,step_index) in check[case_index].steps" align='left'>
+            <td class="check" ><img src="images/next.png" width="18vh"> {{ check[case_index].steps[step_index].name }} </td>
+            <td class="check" > {{ check[case_index].steps[step_index].args[0] }} </td>
+            <td class="check" align='right'>
+            <img v-if="check[case_index].steps[step_index].status == 'PASS'" src="images/pass.png" width="18vh">
+            
+            <img v-if="check[case_index].steps[step_index].status == 'FAIL'" src="images/fail.png" width="18vh">    
+                {{ check[case_index].steps[step_index].status }}</td>
+        </tr>    
+  </table>
+              
+              
+          </div>
+
          <!-- <p id="terminalp" style="color: #63de00;">{{ printscreen }} </p>-->
                 <!--
           <div id="cursorx" class="cursor" style="color: #ffffff;"></div>
           -->
 	  </div>
+                  </div>
             </center>
           </div>
           
@@ -465,8 +493,8 @@
     <script src="editor/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>        
     const ws_url = 'wss://lab.zilogic.com/events';
-    const xmlrpc_url = 'https://cors-anywhere.herokuapp.com/https://lab.zilogic.com/rpc';
-    const new_xmlrpc_url = 'https://lab.zilogic.com/rpc';  
+    const old_xmlrpc_url = 'https://cors-anywhere.herokuapp.com/https://lab.zilogic.com/rpc';
+    const xmlrpc_url = 'https://lab.zilogic.com/rpc';  
     //-------------------- Editor ------------------------------------------------
 /*
 const apple = new Vue({
@@ -621,7 +649,7 @@ const apple = new Vue({
               },
               
               restore_mouseover_task() {
-                alert(''+ login.$data.key + ' -- ' + modal.$data.selected_task + '' )
+                //alert(''+ login.$data.key + ' -- ' + modal.$data.selected_task + '' )
           this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,'ldd',modal.$data.mouseover_task]))).then(response => {
               console.log(response);
               if(modal.$data.mouseover_task == modal.$data.selected_task) {
@@ -760,8 +788,14 @@ const apple = new Vue({
         build: 0,
         show_build_output : false,
         show_task_objective: true,
+        show_check_result: false,
+        update_check: false,  
+        update_build:false,    
         goal: '',    
-        temp: "",    
+        temp: "",
+        case_info : {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false},
+        obj:false,
+        marker: false,
         }, 
           
         watch: {
@@ -791,40 +825,46 @@ const apple = new Vue({
         methods : {
         select_objective () {
         this.show_task_objective = true;
-        this.show_build_output = false;  
-        document.getElementById("objective").style.background = "black";    
+        this.show_build_output = false;
+        this.show_check_result =false;    
+        document.getElementById("objective").style.background = "black";
         document.getElementById("build_output").style.background = "#333";
+        document.getElementById("check_result").style.background = "#333";    
         //document.getElementById("output").style.background = "#333";
         //document.getElementById("output").style.color = "black";       
         document.getElementById("goal").innerHTML = this.goal; 
         },
 
-        select_build_output () {
+        select_build_output() {
         document.getElementById("objective").style.background = "#333";
         document.getElementById("build_output").style.background = "black";
+        document.getElementById("check_result").style.background = "#333";    
         //document.getElementById("output").style.background = "#333";
         //document.getElementById("output").style.color = "white";    
         this.show_task_objective = false;
+        this.show_check_result = false;
         this.show_build_output = true;   
         },
-            
-        build_error() {
-            alert("Building Errors");
-          for (j in this.build){
-          if (this.build[j][1] != null){
-             this.errors.push(this.build[j][1]);
-                } 
-            }
-            alert(JSON.stringify(this.errors)) 
-          },
+        
+        select_check_result() {        document.getElementById("objective").style.background = "#333";
+        document.getElementById("build_output").style.background = "#333";
+        document.getElementById("check_result").style.background = "black";    
+        //document.getElementById("output").style.background = "#333";
+        //document.getElementById("output").style.color = "white";    
+        this.show_task_objective = false;
+        this.show_build_output = false;   
+        this.show_check_result = true;
+        },
                             
-        al() {
+        set_marker() {
             //alert(this.selected_error_index);
-            var range = ace.require(`ace/range`).Range;    
-            
-            this.editor.getSession().addMarker(new range(this.errors[this.selected_error_index].line - 1, 0, 
+            if(this.marker != false) {
+            this.editor.getSession().removeMarker(this.marker)
+            this.marker = false;
+            }
+            var range = ace.require(`ace/range`).Range;
+            this.marker = this.editor.getSession().addMarker(new range(this.errors[this.selected_error_index].line - 1, 0, 
             this.errors[this.selected_error_index].line - 1, 1), 'error', 'fullLine', false);
-            
             },
             
         special_key_event (){
@@ -959,7 +999,8 @@ const apple = new Vue({
             
             window.location.reload(true);
         },
-        select_file() {
+        select_file(flag) {
+        cursor = this.editor.getCursorPosition() //getting the cursor location
         this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_get_file_info_all', [login.$data.key]))).then(response => {
             console.log(response);
             file_info = response.body;  
@@ -975,7 +1016,7 @@ const apple = new Vue({
         this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_read', [login.$data.key,this.active_file]))).then(response => {
         console.log(response)
         this.raw_code = response.body; 
-        this.xml_parser(this.raw_code); 
+        this.xml_parser(this.raw_code);
         this.editor.setValue(this.code, 1);
         /*FIXED -- FILE PROPERTY */
         if(this.file_permission_info[this.active_file] == true ){
@@ -993,13 +1034,20 @@ const apple = new Vue({
             highlightActiveLine: true, 
             highlightGutterLine: true,
             });
-            this.editor.navigateLineStart() 
+            this.editor.navigateLineStart()
+            if(flag == false) {
+            this.editor.gotoLine(cursor.row+1, cursor.column, true);   
+            } else {
             this.editor.gotoLine(1, 0, true);
+            }
         }
         })
         },
 
         wb_load() {
+            document.getElementById("save_status").style.background = "#333";
+            document.getElementById("build_status").style.background = "#333";
+            document.getElementById("check_status").style.background = "#333"; 
             this.obj_task = modal.$data.task_json;
             this.task_file_list = this.obj_task[0][modal.$data.selected_task].files
             //workspace.$data.task_file_list = tasks[0][this.selected_task].files
@@ -1112,6 +1160,7 @@ const apple = new Vue({
         },
   
         wbench_save() {
+            this.editor.setReadOnly(true);
             document.getElementById("save_status").style.display = "none";
             document.getElementById("save_loader").style.display = "inline-block";    
             this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_save', [login.$data.key,this.active_file,this.code]))).then(response => {
@@ -1120,13 +1169,20 @@ const apple = new Vue({
             document.getElementById("save_status").style.display = "inline-block";
             this.wbench_save_status = 1;
             document.getElementById("build_status").style.background = "grey";
+            this.select_file(false);    
+            this.editor.setReadOnly(false);    
             })
-        },    
+        },
             
         wbench_build() {
             if(this.wbench_save_status == 0) {
             return
             }
+            if(this.marker != false) {
+            this.editor.getSession().removeMarker(this.marker)
+            this.marker = false;
+            }
+            this.editor.setReadOnly(true);
             document.getElementById("build_status").style.display = "none";
             document.getElementById("build_loader").style.display = "inline-block";
             this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_build', [login.$data.key]))).then(response => { console.log(response);
@@ -1134,6 +1190,7 @@ const apple = new Vue({
                this.build.length = 0;
                var annotations = this.editor.getSession().getAnnotations();
                annotations.length = 0;
+               this.update_build = false;
                
                 var text = response.data;
                     var parser, xmlDoc;
@@ -1149,6 +1206,7 @@ const apple = new Vue({
                     document.getElementById("build_loader").style.display = "none";
                     this.wbench_build_status = 1; // Build Passed.
                     this.errors.pop(); //Vuejs - updates DOM only on array manuplation.
+                    this.update_build = true;    
                     this.editor.getSession().clearAnnotations()
                     document.getElementById("check_status").style.background = "grey";    
                     }
@@ -1174,10 +1232,12 @@ const apple = new Vue({
                             });    
                             }
                         }    
-                    this.editor.getSession().setAnnotations(annotations);   
+                    this.editor.getSession().setAnnotations(annotations);
+                    this.update_build = true;    
                     this.select_build_output()
                     }
                 //this.select_file()
+                this.editor.setReadOnly(false);
             })
         },
 
@@ -1187,37 +1247,48 @@ const apple = new Vue({
             } else if (this.wbench_build_status == -1) {
                 return   
             }
+            this.editor.setReadOnly(true);
             document.getElementById("check_status").style.display = "none";
             document.getElementById("check_loader").style.display = "inline-block";
             if (this.wbench_build_status == 1) {
             this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_check', [login.$data.key]))).then(response => { 
                     console.log(response);
                     var text = response.data;
-                    var parser, xmlDoc;
+                    var parser, xmlDoc, check_info;
                     parser = new DOMParser();
                     xmlDoc = parser.parseFromString(text,"text/xml");
+                    check_data = $.xmlrpc.parseDocument(xmlDoc); //xml object -> js-obj
+                    this.check = check_data[0][1];
+                    this.update_check=false;
+                
                     var check = xmlDoc.getElementsByTagName("boolean")[0].childNodes[0].nodeValue;
                     if (check == '1') {
                         document.getElementById("check_status").style.display = "inline-block";
                         document.getElementById("check_status").style.background = "green";
                         document.getElementById("check_loader").style.display = "none";    
-                        document.getElementById('info').style.display='block';      
+                        document.getElementById('info').style.display='block';
+                        this.update_check=true;
                     }
                     else if (check == '0') {
                         document.getElementById("check_status").style.display = "inline-block";
                         document.getElementById("check_status").style.background = "red";
                         document.getElementById("check_loader").style.display = "none";    
-                        alert("Check Failed");
-                        this.select_file();    
-                    }            
+                        //alert("Check Failed");
+                        this.select_check_result();
+                        this.update_check=true;
+                        //this.select_file();
+                    } 
+                 this.editor.setReadOnly(false);
                 }) 
             }
         },
-            
+
         wbench_restore_task() {
           this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,'ldd',modal.$data.selected_task]))).then(response => {  
               console.log(response);
-              workspace.wb_load(); 
+              workspace.wb_load();
+              this.update_build = false;
+              this.update_check = false;
           });
         },
 
@@ -1278,13 +1349,13 @@ const apple = new Vue({
       parser = new DOMParser();
       xmlDoc = parser.parseFromString(text,"text/xml");
       workspace.$data.code = this.text;
-      this.key = xmlDoc.getElementsByTagName("string")[0].childNodes[0].nodeValue;
+      this.key = xmlDoc.getElementsByTagName("string")[0].childNodes[0].nodeValue;     
       //alert(`${this.login} - ${this.pass} - ${this.key}`)
           if( this.key != "Authentication Failed") {
       this.loading = false;
       this.submit_button = true;
       this.login_screen = false;
-      modules.$data.page = true; 
+      modules.$data.page = true;
           }
       else {
           alert("Authentication Failed");

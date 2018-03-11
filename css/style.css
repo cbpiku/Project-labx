@@ -271,7 +271,7 @@ position:absolute;right:0;top:0
     text-align:center;
     cursor:pointer;
     white-space:nowrap;
-    border-radius: 4px;
+    border-radius: 0px 4px 0px 4px;
 }
 
 .w3-button:hover{
@@ -878,7 +878,7 @@ textarea::-webkit-scrollbar {
 }
 
 .dropdown .dropbtn {
-    font-size: 2.2vh;    
+    font-size: 1.3em;    
     border: none;
     outline: none;
     color: white;
@@ -1454,8 +1454,25 @@ ul li.task:hover {
     overflow-y: hidden;
     overflow-x: hidden;
 }
-    #output::-webkit-scrollbar { 
-    /*display: none;*/ 
+   /* #output::-webkit-scrollbar { 
+    display: none;
+}*/
+
+#output_content{
+    width: 100%;
+    height:100%;
+    margin-top: 0vh;
+	margin-left: auto;
+	margin-right: auto;
+    margin-bottom: auto;
+    min-width: 0px;
+    min-height: 0px;
+    background:  #f0f0f0;
+    border-radius: 0vh;
+    /*-webkit-transition:all 0.5s; */
+    word-wrap: break-all;
+    overflow-y: visible;
+    overflow-x: hidden;
 }
 
 .marker1 {
@@ -1508,30 +1525,97 @@ th {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  border-bottom: 1px solid #f0f0f0;    
-      
+  border-bottom: 1px solid #f0f0f0;
+  min-width: 0px;
+  padding: 5px 5px;
 }
-
 td {
   font-size: 15.5px;
   background-color: #f0f0f0;
   cursor: pointer;
-}
-
-tr:hover {
-  color: white;    
-}
-
-tr:hover td {background-color:darkred;}
-
-th, td {
   min-width: 0px;
   padding: 5px 5px;
 }
+tr:hover { color: white;  }
+tr:hover td {background-color:darkred;}
 
-green {
- color: #42b983 
+
+table.check {
+  font-family: monospace;
+  font-size: 12.5px;
+  color: black;
+  border: 0px solid #333;
+  border-radius: 0px;
+  background-color: #000;
+ -webkit-border-horizontal-spacing: 0px;
+ -webkit-border-vertical-spacing: 0px;
 }
+
+th.PASS{
+  font-family: 'Poiret One', cursive;
+  font-weight: bold; 
+  font-size: 17px;
+  height: 2.5vh;    
+  color: rgba(255,255,255,0.9);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border-bottom: 0.1px solid dimgray;
+  min-width: 0px;
+  padding: 5px 5px;
+  cursor: pointer; 
+  background-color: darkgreen!important; 
+}
+
+th.FAIL{ 
+  font-family: 'Poiret One', cursive;
+  font-weight: bold;    
+  font-size: 17px;
+  height: 2.5vh;    
+  color: rgba(255,255,255,0.9);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border-bottom: 0.1px solid dimgray;
+  min-width: 0px;
+  padding: 5px 5px;
+  cursor: pointer;
+  background-color: darkred!important; }
+
+
+td.check {
+  font-size: 15.5px;
+  background-color: #f0f0f0;
+  min-width: 0px;
+  padding: 5px 5px;
+  cursor: default;
+}
+
+tr.PASS {background-color::#f0f0f0;}
+tr.PASS:hover { color: white;  }
+tr.PASS:hover td.check {background-color:darkgreen;}
+
+tr.FAIL {background-color:#f0f0f0;}
+tr.FAIL:hover { color: white;  }
+tr.FAIL:hover td.check {background-color:darkred;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .ace_editor .ace_marker-layer .ace_active-line {
     background: lightgray !important;
