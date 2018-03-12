@@ -38,11 +38,12 @@ h2 {
 h4{
     color: black;
     font-size: 1.3em;
-    font-weight: lighter;
+    font-weight: normal ;
+    color: dimgrey;
     letter-spacing: 0em;
     margin-bottom: 0em;
     margin-top: 0em;
-    font-family: 'Rochester', cursive;
+    font-family: 'Poiret One', cursive;
 }
 
 
@@ -52,6 +53,19 @@ input[type=text], select {
     margin: 1vh 0;
     display: inline-block;
     border: 0.1vh solid #999;
+    border-radius: 0.5vh;
+    box-sizing: border-box;
+    font-size: 3vh;
+    outline: none;
+    font-family: 'Poiret One', cursive;
+}
+
+input[type=text]:focus, select {
+    width: 70%;
+    padding: 2vh 2vh;
+    margin: 1vh 0;
+    display: inline-block;
+    border: 0.1vh solid #999!important;
     border-radius: 0.5vh;
     box-sizing: border-box;
     font-size: 3vh;
@@ -71,6 +85,21 @@ input[type=password], select {
     outline: none;
     font-family: 'Poiret One', cursive;
 }
+
+
+input[type=password]:focus, select {
+    width: 70%;
+    padding: 2vh 2vh;
+    margin: 1vh 0;
+    display: inline-block;
+    border: 0.1vh solid #999!important;
+    border-radius: 0.5vh;
+    box-sizing: border-box;
+    font-size: 3vh;
+    outline: none;
+    font-family: 'Poiret One', cursive;
+}
+
 
 button[type=submit], select {
     background-color: black;
@@ -1451,12 +1480,12 @@ ul li.task:hover {
     border-radius: 0.7vh;
     /*-webkit-transition:all 0.5s; */
     word-wrap: break-all;
-    overflow-y: hidden;
-    overflow-x: hidden;
+ /*   overflow-y: hidden;
+    overflow-x: hidden;*/
 }
-   /* #output::-webkit-scrollbar { 
+    #output::-webkit-scrollbar { 
     display: none;
-}*/
+}
 
 #output_content{
     width: 100%;

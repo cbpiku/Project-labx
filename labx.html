@@ -48,7 +48,7 @@
     </ul>        
       <div style="width: 45%; float:left" align="right">
           <h1>
-              <object width=50% type="image/svg+xml" data="images/labx-logo.svg">Your browser does not support SVGs</object> 
+              <object width=53% type="image/svg+xml" data="images/labx-logo.svg">Your browser does not support SVGs</object> 
           </h1>
       </div>
       
@@ -56,13 +56,14 @@
 	<div id="login">
           <div style="width: 60%; float:left" align="center">
             <h1>Laboratory X</h1>
-            <input v-model="login" type="text" placeholder="Username"> <br>
-            <input v-on:keyup.enter="submit" v-model="pass" type="password" placeholder="Password"> <br>
+            <input id="username" v-model="login" type="text" placeholder="Username"> <br>
+            <input id="password" v-on:keyup.enter="submit" v-model="pass" type="password" placeholder="Password"> <br>
              
               <button v-show= "submit_button" type="submit" v-on:click="submit">Login</button>
             <b v-show="loading" class="fa fa-spinner fa-spin" style="padding: 12px 20px; margin: 8px 0; margin-bottom: 30px; font-size: 30px"></b>
-            <br>
-            <h4><a>Or</a></h4>
+            <br><br>
+              <h4 v-if="login_error">Sorry, your Username/Password <br>was incorrect. </h4>
+            <!--<h4><a>Or</a></h4>
             <button type="oauth" style="background-color:dodgerblue;" onclick="location.href='https://oauth.net/2/'" >
               <b class="fa-twitter"></b></button>        
             <button type="oauth" style="background-color: #d34836;" onclick="location.href='https://oauth.net/2/'" >
@@ -70,7 +71,7 @@
             <button type="oauth" style="background-color: #3b5998;" onclick="location.href='https://oauth.net/2/'" >
               <b class="fa-facebook"></b></button>
             <button type="oauth" style="background-color:black;" onclick="location.href='https://oauth.net/2/'" >
-              <b class="fa-github"></b></button>
+              <b class="fa-github"></b></button>-->
         </div>
 	</div>        
         </div>
@@ -240,6 +241,7 @@
             <a class="active" v-on:click="logout">Logout</a></li>
         <li style="float:right"><a class="active" v-on:click="load_modules_page" >Modules</a></li>
         <li style="float:right"><a class="active" v-on:click="select_module" >Tasks</a></li>
+        <li style="float:right; cursor:progress"><a class="" v-on:click="select_module" >{{ active_task }}</a></li>
     </ul>
         
       <div style="width: 50%; float:left;" align="left">
@@ -304,7 +306,7 @@
         
         <div v-show=!show_led>
           <ul class="menu">
-        <li class="menu" style="float:right"><a v-on:click="wbench_check">Check
+        <li class="menu" style="float:right"><a id="check" v-on:click="wbench_check">Check
             <span id="check_status" class="status"></span>
             <div id="check_loader" class="sk-fading-circle">
         <div class="sk-circle1 sk-circle"></div>
@@ -322,7 +324,7 @@
             </div>
             <!--<div class="build_loader" id="check_loader"></div>-->
             </a></li>
-        <li class="menu" style="float:right"><a v-on:click="wbench_build">Build
+        <li class="menu" style="float:right;"><a id="build" v-on:click="wbench_build">Build
             <span id="build_status" class="status"></span>
             
              <div id="build_loader" class="sk-fading-circle">
@@ -380,7 +382,7 @@
         letter-spacing: 0.1vh;
         font-weight: normal;                                                   
                     "
-        ><a v-on:click="select_module">{{ active_task }}</a></li>
+        ><a v-on:click="">{{ active_file }}</a></li>
     </ul>       
           </div>
           
@@ -423,8 +425,8 @@
                     font-weight: bold;
                     font-family: 'Poiret One', cursive;"
                    ><a v-on:click="select_check_result">Check Results&nbsp;&nbsp; </a></li>
-                   
                </ul>
+                  
                 <div id="output_content">  
               <div id="objective_content" v-show=show_task_objective>
                   <div id="goal_table">
@@ -432,10 +434,15 @@
                   </div>
                 <img src="images/goal.png" style="width: 10vh; margin-top: 1em;">
                 </div>
-                  </div>
-      
-              <div v-if=show_build_output>  
-            <table style="width:100%" align='center'>
+                  </div>              
+                    
+              <div v-if=show_build_output>
+            <div v-if=build_passed>
+                <img src="images/build_success.svg" style="width:20vh; margin-top: 3vh">
+                 <h4 style="font-size:4vh; font-weight: bold">Build Complete</h4>
+            </div>
+                  
+            <table v-if=!build_passed style="width:100%" align='center'>
   <tr align="center">
     <th>#</th>
     <th>File</th> 
@@ -466,7 +473,9 @@
     
         <tr :class="check[case_index].steps[step_index].status"  v-if="case_info[case_index]" v-for="(value,step_index) in check[case_index].steps" align='left'>
             <td class="check" ><img src="images/next.png" width="18vh"> {{ check[case_index].steps[step_index].name }} </td>
-            <td class="check" > {{ check[case_index].steps[step_index].args[0] }} </td>
+            
+            <td class="check" > {{ compute_args(check[case_index].steps[step_index].args) }} </td>
+            
             <td class="check" align='right'>
             <img v-if="check[case_index].steps[step_index].status == 'PASS'" src="images/pass.png" width="18vh">
             
@@ -662,7 +671,7 @@ const apple = new Vue({
               
                get_next_task() {
             if (this.selected_task_index < (this.total_tasks - 1) ){
-                //alert(this.total_tasks + '/' + this.selected_task_index + '  ' + this.tasks_list[this.selected_task_index])
+                //alert(this.total_tasks + '/' + this.selected_task_index + ', ' + this.tasks_list[this.selected_task_index])
                 this.next_task_index = (this.selected_task_index + 1);
                 this.next_task = this.tasks_list[this.next_task_index]
                 this.next_task_status = this.task[0][this.next_task].status
@@ -766,7 +775,7 @@ const apple = new Vue({
         code : '',
         command : '',
         pre_command: '',
-        printscreen : 'Gnu-linux | Last login: Tue Dec 13 09:01:16',
+        printscreen : '',
         testings : false, //FIXME
         modules: false,
         active_task: '',
@@ -790,7 +799,8 @@ const apple = new Vue({
         show_task_objective: true,
         show_check_result: false,
         update_check: false,  
-        update_build:false,    
+        update_build:false,
+        build_passed: false,    
         goal: '',    
         temp: "",
         case_info : {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false},
@@ -803,11 +813,17 @@ const apple = new Vue({
       	     if (this.code == this.server_code) {
                 document.getElementById("save_status").style.background = "green";
                 this.wbench_save_status = 1;
-                document.getElementById("build_status").style.background = "grey";
+                document.getElementById("build_status").style.background = "#333";//"grey";
+                 document.getElementById("build").style.color = "white";
             }else{
                 document.getElementById("save_status").style.background = "red";
                 document.getElementById("build_status").style.background = "#333";
-                document.getElementById("check_status").style.background = "#333";       
+                document.getElementById("check_status").style.background = "#333";
+                document.getElementById("build").style.color = "#666";
+                document.getElementById("check").style.color = "#666";
+                
+                
+                
                 this.wbench_save_status = 0; // needs saving
                 this.wbench_build_status = 0; // needs build
             }
@@ -823,6 +839,18 @@ const apple = new Vue({
         }, 
           
         methods : {
+        compute_args (args_list) {
+            var full_args_list = ''
+            for (index in args_list){
+                full_args_list = full_args_list + args_list[index]
+                if(args_list.length > index+1) {
+                full_args_list = full_args_list + ', '
+                }
+            }
+          return full_args_list
+        },
+            
+            
         select_objective () {
         this.show_task_objective = true;
         this.show_build_output = false;
@@ -1042,12 +1070,16 @@ const apple = new Vue({
             }
         }
         })
+        this.wbench_build_status = 0; // needs build
+        document.getElementById("check").style.color = "#666";
         },
 
         wb_load() {
             document.getElementById("save_status").style.background = "#333";
             document.getElementById("build_status").style.background = "#333";
-            document.getElementById("check_status").style.background = "#333"; 
+            document.getElementById("check_status").style.background = "#333";
+            document.getElementById("build").style.color = "#666";
+            document.getElementById("check").style.color = "#666";
             this.obj_task = modal.$data.task_json;
             this.task_file_list = this.obj_task[0][modal.$data.selected_task].files
             //workspace.$data.task_file_list = tasks[0][this.selected_task].files
@@ -1168,9 +1200,11 @@ const apple = new Vue({
             document.getElementById("save_status").style.background = "green";
             document.getElementById("save_status").style.display = "inline-block";
             this.wbench_save_status = 1;
-            document.getElementById("build_status").style.background = "grey";
-            this.select_file(false);    
-            this.editor.setReadOnly(false);    
+            document.getElementById("build_status").style.background = "#333";//"grey";
+            document.getElementById("build").style.color = "white";
+            document.getElementById("check_status").style.background = "#333";//"grey";    
+            this.select_file(false);
+            this.editor.setReadOnly(false);
             })
         },
             
@@ -1205,10 +1239,13 @@ const apple = new Vue({
                     document.getElementById("build_status").style.background = "green";
                     document.getElementById("build_loader").style.display = "none";
                     this.wbench_build_status = 1; // Build Passed.
+                    this.build_passed = true;
                     this.errors.pop(); //Vuejs - updates DOM only on array manuplation.
-                    this.update_build = true;    
+                    this.update_build = true;
+                    this.select_build_output();    
                     this.editor.getSession().clearAnnotations()
-                    document.getElementById("check_status").style.background = "grey";    
+                    document.getElementById("check_status").style.background = "#333";//"grey";
+                    document.getElementById("check").style.color = "white";
                     }
                     else if ( build_status == '0' ){
                     document.getElementById("build_status").style.display = "inline-block";
@@ -1234,7 +1271,8 @@ const apple = new Vue({
                         }    
                     this.editor.getSession().setAnnotations(annotations);
                     this.update_build = true;    
-                    this.select_build_output()
+                    this.select_build_output();
+                    this.build_passed = false;
                     }
                 //this.select_file()
                 this.editor.setReadOnly(false);
@@ -1332,6 +1370,7 @@ const apple = new Vue({
       submit_button: true,
       loading: false,
       login_screen: true,
+      login_error: false,
       },      
       methods: {  
       submit() {
@@ -1356,10 +1395,17 @@ const apple = new Vue({
       this.submit_button = true;
       this.login_screen = false;
       modules.$data.page = true;
+      this.login_error = false; 
+      document.getElementById('password').style.border= '0.1vh solid #999'     
           }
       else {
-          alert("Authentication Failed");
-          window.location.reload(true);
+          //alert("Authentication Failed");
+          //window.location.reload(true);
+          this.login_error = true;
+          this.pass = '';
+          this.loading = false;
+          this.submit_button = true;
+          document.getElementById('password').style.border= '0.1vh solid darksalmon'
       }
       }}})
     </script>
