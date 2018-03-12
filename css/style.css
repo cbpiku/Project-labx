@@ -820,7 +820,7 @@ ul.menu {
 }
 
 li {
-    float: left;
+    display: inline-block;
 }
 
 li a {
@@ -830,6 +830,20 @@ li a {
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+}
+
+li.filename a {
+    font-size: 1.1em;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 7px 15px;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+li.filename a:hover:not(.active) {
+    background-color: inherit;
 }
 
 
@@ -1065,8 +1079,6 @@ div.svg {
     fill: #b3b3b3;
 }
 
-
-
 ul.task {
 	font-size: 25px;
     background: none;
@@ -1209,6 +1221,21 @@ ul li.task:hover {
     display: inline-block;
     border-radius: 50%;
 }
+
+.status-NEW {
+    background: grey;
+}
+
+.status-COMPLETED {
+    background: darkgreen;
+}
+
+.status-IN_PROGRESS {
+    background: darkred;
+}
+
+
+
 
 #circle38412:active { 
     fill:blue; 
@@ -1502,6 +1529,7 @@ ul li.task:hover {
     word-wrap: break-all;
     overflow-y: visible;
     overflow-x: hidden;
+    padding-left: 0vh;
 }
 
 .marker1 {
@@ -1630,22 +1658,6 @@ tr.FAIL {background-color:#f0f0f0;}
 tr.FAIL:hover { color: white;  }
 tr.FAIL:hover td.check {background-color:darkred;}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .ace_editor .ace_marker-layer .ace_active-line {
     background: lightgray !important;
 }
@@ -1680,8 +1692,9 @@ display: block;
     margin-bottom: 0px;
     margin-top: 0px;
 }
+
 .paragraph p {
-    display: inline;
+    display: inline-block !important;
 }
 
 #objective_content {
@@ -1716,6 +1729,17 @@ display: block;
     font-family: 'Poiret One', cursive;
     color: black;
     content: ": "
+}
+
+ol.arabic {
+    margin-bottom: 0vh;
+}
+
+ol.arabic li p{
+    display: block;
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
 }
 
 .sectionbody {

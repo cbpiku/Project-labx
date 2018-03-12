@@ -88,41 +88,43 @@
     <section id="three" class="wrapper align-center">
       <div class="inner">
 	<div class="flex flex-2">
+    
 	  <article>
 	    <div class="image round">
-	      <img src="images/device.png" alt="Pic 01" />
+	      <img src="images/labx-intro.png" alt="Pic 01" />
+	    </div>
+	    <header>
+	      <h3>Getting Started</h3>
+	    </header>
+	    <footer>
+	      <a class="button" v-on:click="select_module('labx')">Lets Get Started</a>
+	    </footer>
+	  </article>
+            
+	  <article>
+	    <div class="image round">
+	      <img src="images/device.png" alt="Pic 02" />
 	    </div>
 	    <header>
 	      <h3>Linux Device Drivers</h3>
 	    </header>
 	    <footer>
-	      <a class="button" v-on:click='select_module'>Load Exercise</a>
+	      <a class="button" v-on:click="select_module('ldd')">Load Exercise</a>
 	    </footer>
 	  </article>
 	  
 	  <article>
 	    <div class="image round">
-	      <img src="images/interface.png" alt="Pic 02" />
+	      <img src="images/interface.png" alt="Pic 03" />
 	    </div>
 	    <header>
 	      <h3>Linux Kernel Porting</h3>
 	    </header>
 	    <footer>
-	      <a href="#" class="button_comming" font-color='black'>Comming Soon</a>
+	      <a class="button_comming" font-color='black'>Comming Soon</a>
 	    </footer>
 	  </article>
-	  
-	  <article>
-	    <div class="image round">
-	      <img src="images/xv61.png" alt="Pic 02" />
-	    </div>
-	    <header>
-	      <h3>Understanding XV6</h3>
-	    </header>
-	    <footer>
-	      <a href="#" class="button_comming">Comming Soon</a>
-	    </footer>
-	  </article>        
+       
 	</div>
       </div>
     </section>
@@ -150,7 +152,8 @@
                     <img src="images/completed.png" style="display:inline; margin:0px;">
                     </center>
                     </span>
-                </div>-->
+                </div>
+        -->
                 <div id="task_details" v-if="refresh_task">
                 <div style="width:50%; float:left" align="right">
                 <span style=" font-family: 'Poiret One', cursive;
@@ -159,7 +162,10 @@
                     {{ mouseover_task_details }} <br>
                     </span>
                 </div>
+                    
+                    
                 <div style="width:49.5%; float:right; padding-left: 0.5vh; display: inline" align="left">
+                    
                 <span style=" font-family: 'Poiret One', cursive;
         font-weight: bold;font-size: 12pt; font-size: 22px"> {{ mouseover_task_status }} </span><br>
                     <div style="display:inline" v-if= "mouseover_task_status == 'NEW'">
@@ -173,9 +179,10 @@
                     </div>
                     
                 </div>
-                <center>
-                <ul class=task> 
-                    <li id=task
+                    <br><br>.<br><br>
+                    <div style="display: block; margin-left: 0vh; display: block;" align="center">
+                <ul class=task align="center"> 
+                    <li align="center" id=task
                     v-for="(value, key, index) in task[0]"
                     v-on:mouseover="mouseover_task_details = task[0][key].title;
                                     mouseover_task_status = task[0][key].status;
@@ -194,9 +201,22 @@
                     :class="'task-' + task[0][key].status"     
                         >
                                {{index+1}}
+                    
+                    <span id="" class="status" style="
+                                                      display: inline;
+                                                      position: relative;
+                                                      top: 5vh;
+                                                      right: 0vh;
+                                                      left: 2vh;
+                                                      margin: 0px;
+                                                      padding: 0px;
+                                                      "
+                          
+                          :class="'status-' + task[0][key].status" ></span>
                     </li>    
                 </ul>
-                </center><br>
+                    </div>    
+                <br>
                     </div>
             </center>
         <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
@@ -241,7 +261,9 @@
             <a class="active" v-on:click="logout">Logout</a></li>
         <li style="float:right"><a class="active" v-on:click="load_modules_page" >Modules</a></li>
         <li style="float:right"><a class="active" v-on:click="select_module" >Tasks</a></li>
-        <li style="float:right; cursor:progress"><a class="" v-on:click="select_module" >{{ active_task }}</a></li>
+        <li style="float:right; cursor:progress"><a class="" v-on:click="select_module" >
+            <img src="images/task_title.png" style="width: 2.0vh; padding:0; margin: 0;">
+            {{ active_task_title }}</a></li>
     </ul>
         
       <div style="width: 50%; float:left;" align="left">
@@ -376,13 +398,8 @@
                 <li v-on:click="file_build"><center>Build.log</center></li>-->
             </div>
         </div>
-        <li class="menu" style="float:left" style="
-        font-family: 'Rochester', cursive;
-        font-size: 2.7vh;
-        letter-spacing: 0.1vh;
-        font-weight: normal;                                                   
-                    "
-        ><a v-on:click="">{{ active_file }}</a></li>
+        <li class="filename" style="float:left"
+        ><a style="cursor: default" v-on:click="">{{ active_file }}</a></li>
     </ul>       
           </div>
           
@@ -427,7 +444,8 @@
                    ><a v-on:click="select_check_result">Check Results&nbsp;&nbsp; </a></li>
                </ul>
                   
-                <div id="output_content">  
+                <div id="output_content">
+                    
               <div id="objective_content" v-show=show_task_objective>
                   <div id="goal_table">
                 <div id="goal">
@@ -438,8 +456,9 @@
                     
               <div v-if=show_build_output>
             <div v-if=build_passed>
-                <img src="images/build_success.svg" style="width:20vh; margin-top: 3vh">
-                 <h4 style="font-size:4vh; font-weight: bold">Build Complete</h4>
+                <img src="images/build_success.svg" style="width:16vh; margin-top: 7vh">
+                <br><br>
+                 <h4 style="font-size:3vh; font-weight: bold">Build Complete</h4>
             </div>
                   
             <table v-if=!build_passed style="width:100%" align='center'>
@@ -464,7 +483,7 @@
     </div> 
                   
     <div v-if=show_check_result>         
-    <table class="check" v-for="(value,case_index) in check" style="width:100%" align='center'>
+    <table v-if="update_check" class="check" v-for="(value,case_index) in check" style="width:100%" align='center'>
         <tr v-if="update_check" class="check" align='left' v-on:click="case_info[case_index]=!case_info[case_index]">
             <th :class="check[case_index].status"><img v-if=case_info[case_index] src="images/plus.png" width="18vh"><img v-if=!case_info[case_index] src="images/minus.png" width="18vh">  {{ check[case_index].name }}</th>
             <th :class="check[case_index].status"></th>
@@ -485,13 +504,14 @@
   </table>
               
               
-          </div>
-
+          
+</div>
          <!-- <p id="terminalp" style="color: #63de00;">{{ printscreen }} </p>-->
                 <!--
           <div id="cursorx" class="cursor" style="color: #ffffff;"></div>
           -->
 	  </div>
+                    
                   </div>
             </center>
           </div>
@@ -502,7 +522,7 @@
     <script src="editor/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>        
     const ws_url = 'wss://lab.zilogic.com/events';
-    const old_xmlrpc_url = 'https://cors-anywhere.herokuapp.com/https://lab.zilogic.com/rpc';
+    const new_xmlrpc_url = 'https://cors-anywhere.herokuapp.com/https://lab.zilogic.com/rpc';
     const xmlrpc_url = 'https://lab.zilogic.com/rpc';  
     //-------------------- Editor ------------------------------------------------
 /*
@@ -533,10 +553,12 @@ const apple = new Vue({
       el: '#modules',
       data: {
       page : false,
-      websoc_state: false,
+      websoc_state: false, 
+      selected_module: '',
       },
       methods: {    
-      select_module() { 
+      select_module(module) {
+          this.selected_module = module;
           //-------------------------- # WebSoc # ------------------------
           if (this.websoc_state == false) {
           this.websoc_state = true;
@@ -659,7 +681,7 @@ const apple = new Vue({
               
               restore_mouseover_task() {
                 //alert(''+ login.$data.key + ' -- ' + modal.$data.selected_task + '' )
-          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,'ldd',modal.$data.mouseover_task]))).then(response => {
+          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,modules.$data.selected_module,modal.$data.mouseover_task]))).then(response => {
               console.log(response);
               if(modal.$data.mouseover_task == modal.$data.selected_task) {
               workspace.wb_load();
@@ -686,7 +708,8 @@ const apple = new Vue({
         load_next_task() {
             if(this.next_task == 'NONE') {
              document.getElementById('info').style.display='none';       
-             alert("Module Complete")
+	     //alert("Module Complete");
+	     workspace.load_modules_page();				   
             } else {
              this.selected_task_index = this.next_task_index;     
              this.selected_task = this.next_task;
@@ -708,8 +731,8 @@ const apple = new Vue({
             },
             
               get_tasks() {
-          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('get_tasks', [login.$data.key, 'ldd']))).then(response => {
-          console.log(response)    
+          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('get_tasks', [login.$data.key, modules.$data.selected_module]))).then(response => {
+          console.log(response)
           this.task = response.body;  
             var parser = new DOMParser();                          
         tasks = parser.parseFromString(this.task, "text/xml");  //xml-string to xml-object
@@ -779,6 +802,7 @@ const apple = new Vue({
         testings : false, //FIXME
         modules: false,
         active_task: '',
+        active_task_title: '',
         active_file: '',
         show_led: false,
         plus: "Device",
@@ -803,7 +827,7 @@ const apple = new Vue({
         build_passed: false,    
         goal: '',    
         temp: "",
-        case_info : {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false},
+        case_info : {0:true, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false},
         obj:false,
         marker: false,
         }, 
@@ -821,11 +845,9 @@ const apple = new Vue({
                 document.getElementById("check_status").style.background = "#333";
                 document.getElementById("build").style.color = "#666";
                 document.getElementById("check").style.color = "#666";
-                
-                
-                
                 this.wbench_save_status = 0; // needs saving
                 this.wbench_build_status = 0; // needs build
+                this.build_passed = false;
             }
          }
         },
@@ -1085,9 +1107,9 @@ const apple = new Vue({
             //workspace.$data.task_file_list = tasks[0][this.selected_task].files
             this.active_file = this.obj_task[0][modal.$data.selected_task].files[0]
             
-            /*this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('get_tasks', [login.$data.key, 'ldd']))).then(response => {this.temp = response.body;})
+            /*this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('get_tasks', [login.$data.key, modules.$data.selected_module]))).then(response => {this.temp = response.body;})
             */    
-            this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('open_task', [login.$data.key,'ldd',modal.$data.selected_task]))).then(
+            this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('open_task', [login.$data.key,modules.$data.selected_module,modal.$data.selected_task]))).then(
                 response => {
                              console.log(response)
                              response = response.body;
@@ -1100,10 +1122,16 @@ const apple = new Vue({
             document.getElementById("goal").innerHTML = this.goal     
                     
                     this.active_task = modal.$data.selected_task;
+                    this.active_task_title = modal.$data.selected_task_details;
                     this.select_file();
                     this.ace_clear_undo();
                     this.select_objective();
                     this.wb_reset();
+                    
+                    this.update_build = false;
+                    this.update_check = false;
+                    this.build_passed = false;
+                    this.show_check_result = false;
           })    
         },
 
@@ -1306,6 +1334,7 @@ const apple = new Vue({
                         document.getElementById("check_loader").style.display = "none";    
                         document.getElementById('info').style.display='block';
                         this.update_check=true;
+                        this.select_check_result();
                     }
                     else if (check == '0') {
                         document.getElementById("check_status").style.display = "inline-block";
@@ -1322,7 +1351,7 @@ const apple = new Vue({
         },
 
         wbench_restore_task() {
-          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,'ldd',modal.$data.selected_task]))).then(response => {  
+          this.$http.post(xmlrpc_url,(new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key,modules.$data.selected_module,modal.$data.selected_task]))).then(response => {  
               console.log(response);
               workspace.wb_load();
               this.update_build = false;
