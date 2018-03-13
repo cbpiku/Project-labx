@@ -56,8 +56,8 @@
 	<div id="login">
           <div style="width: 60%; float:left" align="center">
             <h1>Laboratory X</h1>
-            <input id="username" v-model="login" type="text" placeholder="Username"> <br>
-            <input id="password" v-on:keyup.enter="submit" v-model="pass" type="password" placeholder="Password"> <br>
+            <input id="username" v-on:click="login_error_handle" v-model="login" type="text" placeholder="Username"> <br>
+            <input id="password" v-on:click="login_error_handle" v-on:keyup.enter="submit" v-model="pass" type="password" placeholder="Password"> <br>
              
               <button v-show= "submit_button" type="submit" v-on:click="submit">Login</button>
             <b v-show="loading" class="fa fa-spinner fa-spin" style="padding: 12px 20px; margin: 8px 0; margin-bottom: 30px; font-size: 30px"></b>
@@ -522,8 +522,8 @@
     <script src="editor/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>        
     const ws_url = 'wss://lab.zilogic.com/events';
-    const new_xmlrpc_url = 'https://cors-anywhere.herokuapp.com/https://lab.zilogic.com/rpc';
-    const xmlrpc_url = 'https://lab.zilogic.com/rpc';  
+    const xmlrpc_url = 'https://cors-anywhere.herokuapp.com/https://lab.zilogic.com/rpc';
+    const old_xmlrpc_url = 'https://lab.zilogic.com/rpc';  
     //-------------------- Editor ------------------------------------------------
 /*
 const apple = new Vue({
@@ -1403,7 +1403,12 @@ const apple = new Vue({
       login_screen: true,
       login_error: false,
       },      
-      methods: {  
+      methods: {
+      login_error_handle() {
+        document.getElementById('password').style.border= '0.1vh solid #999'
+        document.getElementById('username').style.border= '0.1vh solid #999'
+      }, 
+          
       submit() {
       this.submit_button = false;
       this.loading = true;    
@@ -1427,7 +1432,8 @@ const apple = new Vue({
       this.login_screen = false;
       modules.$data.page = true;
       this.login_error = false; 
-      document.getElementById('password').style.border= '0.1vh solid #999'     
+      document.getElementById('password').style.border= '0.1vh solid #999'
+      document.getElementById('username').style.border= '0.1vh solid #999'
           }
       else {
           //alert("Authentication Failed");
@@ -1437,6 +1443,7 @@ const apple = new Vue({
           this.loading = false;
           this.submit_button = true;
           document.getElementById('password').style.border= '0.1vh solid darksalmon'
+          document.getElementById('username').style.border= '0.1vh solid darksalmon'
       }
       }}})
     </script>
