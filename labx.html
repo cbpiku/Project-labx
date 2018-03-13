@@ -262,7 +262,7 @@
         <li style="float:right"><a class="active" v-on:click="load_modules_page" >Modules</a></li>
         <li style="float:right"><a class="active" v-on:click="select_module" >Tasks</a></li>
         <li style="float:right; cursor:progress"><a class="" v-on:click="select_module" >
-            <img src="images/task_title.png" style="width: 2.0vh; padding:0; margin: 0;"> Task: {{ active_task_title }}</a></li>
+            <img src="images/task_title.png" style="width: 2.0vh; padding:0; margin: 0;"> Task {{ active_task_index + 1 }}: {{ active_task_title }}</a></li>
     </ul>
         
       <div style="width: 50%; float:left;" align="left">
@@ -484,7 +484,7 @@
     <div v-if=show_check_result>         
     <table v-if="update_check" class="check" v-for="(value,case_index) in check" style="width:100%" align='center'>
         <tr v-if="update_check" class="check" align='left' v-on:click="case_info[case_index]=!case_info[case_index]">
-            <th :class="check[case_index].status"><img v-if=case_info[case_index] src="images/plus.png" width="18vh"><img v-if=!case_info[case_index] src="images/minus.png" width="18vh">  {{ check[case_index].name }}</th>
+            <th :class="check[case_index].status"><img v-if=case_info[case_index] src="images/up.png" width="18vh"><img v-if=!case_info[case_index] src="images/down.png" width="18vh">  {{ check[case_index].name }}</th>
             <th :class="check[case_index].status"></th>
             <th :class="check[case_index].status" align='right'>{{ check[case_index].status }}</th>    
         </tr>
@@ -803,6 +803,7 @@ const apple = new Vue({
         modules: false,
         active_task: '',
         active_task_title: '',
+        active_task_index: '',
         active_file: '',
         show_led: false,
         plus: "Device",
@@ -1124,6 +1125,7 @@ const apple = new Vue({
                     
                     this.active_task = modal.$data.selected_task;
                     this.active_task_title = modal.$data.selected_task_details;
+                    this.active_task_index = modal.$data.selected_task_index;
                     this.select_file();
                     this.ace_clear_undo();
                     this.select_objective();

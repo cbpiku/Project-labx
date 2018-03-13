@@ -212,6 +212,7 @@ button[type=about], select {
 }
 
 input[type=command], select {
+    font-family: monospace;
     background-color: black;
     width: 76%;
     padding: 13px 12px;
