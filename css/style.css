@@ -273,27 +273,20 @@ button[type=device], select {
 }@keyframes animatezoom{from{transform:scale(0)} to{transform:scale(1)}
 }
 
-.w3-xlarge
-{
-    font-size:24px!important
-}
-.w3-display-topright
-{
-position:absolute;right:0;top:0
-}
-
 .w3-container,.w3-panel { padding:0.01em 16px }
 .w3-panel { margin-top:16px;margin-bottom:16px }
 .w3-border-top { border-top:1px solid darkgrey!important }
 .w3-border-bottom { border-bottom:1px solid #ccc!important }
 .w3-padding-16 { padding-top:16px!important;padding-bottom:16px!important }
 .w3-button {
+    font-family: 'Poiret One', cursive;
+    font-weight: bold;
     background-color: darkred;
     color: white;   
     border:none;
     display:inline-block;
     outline:0;
-    padding:8px 16px;
+    padding:8px 16px 13px 16px;
     vertical-align:middle;
     overflow:hidden;
     text-decoration:none;
@@ -307,6 +300,17 @@ position:absolute;right:0;top:0
     background-color: grey;
     color: white;
 }
+
+.w3-xlarge
+{
+    font-size:24px!important
+}
+
+.w3-display-topright
+{
+position:absolute;right:0;top:0
+}
+
 
 terminalbody { 
 background:#d2dfe6;
