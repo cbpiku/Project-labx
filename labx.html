@@ -555,6 +555,7 @@ const apple = new Vue({
       page : false,
       websoc_state: false, 
       selected_module: '',
+      lcd_state: false,
       },
       methods: {    
       select_module(module) {
@@ -562,7 +563,7 @@ const apple = new Vue({
           //-------------------------- # WebSoc # ------------------------
           if (this.websoc_state == false) {
           this.websoc_state = true;
-          var lcd_state = false;
+          this.lcd_state = false;
           var ws = new WebSocket(ws_url);
           ws.onopen = function (event) {
              // alert('' + login.$data.key + '');
@@ -593,11 +594,11 @@ const apple = new Vue({
                     var object = document.getElementById("board");
                     var svgDocument = object.contentDocument;
               
-                  if (lcd_state == false ) {
+                  //if (this.lcd_state == false ) {
                     var svgbl = svgDocument.getElementsByClassName("lcd_bl");
                     svgbl[0].style.fill = "#afe9af";
-                    lcd_state = true;
-                    }
+                    this.lcd_state = true;
+                    //}
                     var lcd_data = wsevent_data.display;
                     var cursor = wsevent_data.cursor;
         
@@ -1032,8 +1033,9 @@ const apple = new Vue({
           }
           }
         },   
-        select_module(){  //FIXME: This should be renamed to show_select_module
+        select_module() {  //FIXME: This should be renamed to show_select_module
             // -------------------------- Refresh Select -------------------//
+            
             modal.get_tasks();
             modal.$data.update_selected_task_info = true;
             //document.getElementById('id01').style.display='block';         
