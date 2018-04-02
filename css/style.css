@@ -1753,3 +1753,25 @@ ol.arabic li p{
     color: black;
     font-size: 20px;
 }
+
+.tableblock th{
+    background-color: black;
+    color: white;
+}
+
+.tableblock tr td {
+    color: black;
+    background-color: #f0f0f0;
+    cursor: default;
+}
+
+.tableblock tr:hover td {
+    color: black;
+    background-color: #f0f0f0;
+    cursor: default;
+}
+
+.tableblock td p {
+    padding: 0px;
+    margin: 0px;
+}
