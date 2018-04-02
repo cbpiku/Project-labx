@@ -4,25 +4,26 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>LabX</title>
-    <link rel="stylesheet" href="css/module.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css?family=Rochester" rel="stylesheet">
+    <script src="js/lib/vue.js"></script>
+    <script src="js/lib/vue-resource.js"></script>
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery.xmlrpc.js"></script>
+    <script src="js/lib/require.js"></script>
+    <script src="offline/offline.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
-    <script src="js/vue.js"></script>
-    <script src="js/vue-resource@1.3.4"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-    <script src="js/jquery.xmlrpc.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
     <link rel="stylesheet" href="offline/offline-theme-slide.css" />
     <link rel="stylesheet" href="offline/offline-language-english.css" />
-    <script src="offline/offline.min.js"></script>
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    
 </head>
 
 <body>
-    <div v-show="login_screen" style="" id="login">
+    <div id="labx"></div>
+    <div v-show="login_screen" id="login">
         <div style="width: 50%; float:left; height: 100vh; background-color: rgba(20, 20, 20, 1)" align="center">
             <div style="margin-top: 40vh">
                 <h2 style="font-size: 13vh; color:whitesmoke">
@@ -34,13 +35,13 @@
         <div style="width: 50%; float:right" align="center">
             <div id="login" align="center">
                 <div style="margin-top:33vh;  width: 60%;" align="center">
-                    <input id="username" v-on:click="login_error_handle" align="center" v-model="login" type="text" placeholder="Username" style="width:45vh"> <br><br>
-                    <input id="password" v-on:click="login_error_handle" v-on:keyup.enter="submit" v-model="pass" type="password" placeholder="Password" style="width:45vh"> <br><br>
+                    <input id="username" v-on:focus="login_focus" align="center" v-model="login_id" type="text" placeholder="Username" style="width:45vh"> <br><br>
+                    <input id="password" v-on:focus="login_focus" v-on:keyup.enter="submit" v-model="login_pass" type="password" placeholder="Password" style="width:45vh"> <br><br>
                     <button v-show="submit_button" type="submit" v-on:click="submit" style="width:45vh">Login</button>
                     <br>
                     <b v-show="loading" class="fa fa-spinner fa-spin" style="padding: 12px 20px; margin: 8px 0; margin-bottom: 30px; font-size: 50px"></b>
                     <br>
-                    <h4 v-show="login_error">Sorry, your Username/Password <br>was incorrect. </h4>
+                    <h4 v-show="show_login_error">Sorry, your Username/Password <br>was incorrect. </h4>
                     <div width="100%">
                         <span align="center" style="font-family: 'Poiret One', cursive;
                          font-weight: normal;
@@ -81,7 +82,7 @@
                         </footer>
                     </article>
 
-                     <article>
+                    <article>
                         <div class="image round">
                             <img src="images/device.png" alt="Pic 02" />
                         </div>
@@ -117,53 +118,49 @@
                         </footer>
                     </article>
 -->
-
                 </div>
             </div>
         </section>
     </div>
+<div id="modal">
 
-    <div id="modal">
-        <div id="id01" class="w3-modal">
-            <div class="w3-modal-content">
-                <br>
-                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright">x</span>
-                <center>
-                    <h2> Select Task </h2>
+    <div id="id01" class="w3-modal">
+        <div class="w3-modal-content">
+            <br>
+            <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright">x</span>
+            <center>
+                <h2> Select Task </h2>
 
-                    <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
-                        <span style=" font-family: 'Poiret One', cursive;
+                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                    <span style=" font-family: 'Poiret One', cursive;
                 font-weight: bold;font-size: 12pt; font-size: 22px"> Task Details </span></div>
 
-                    <div id="task_details" v-if="refresh_task">
-                        <div style="width:50%; float:left" align="right">
-                            <span style=" font-family: 'Poiret One', cursive;
+                <div id="task_details" v-if="refresh_task">
+                    <div style="width:50%; float:left" align="right">
+                        <span style=" font-family: 'Poiret One', cursive;
         font-weight: bold;font-size: 12pt; font-size: 22px">
                         {{ mouseover_task }} <br>
                     {{ mouseover_task_details }} <br>
                     </span>
-                        </div>
-
-
-                        <div style="width:49.5%; float:right; padding-left: 0.5vh; display: inline" align="left">
-
-                            <span style=" font-family: 'Poiret One', cursive;
+                    </div>
+                    <div style="width:49.5%; float:right; padding-left: 0.5vh; display: inline" align="left">
+                        <span style=" font-family: 'Poiret One', cursive;
         font-weight: bold;font-size: 12pt; font-size: 22px"> {{ mouseover_task_status }} </span><br>
-                            <div style="display:inline" v-if="mouseover_task_status == 'NEW'">
-                                <img src="images/new_progress.png" style="display:inline; margin:0px;">
-                            </div>
-                            <div style="display:inline" v-if="mouseover_task_status == 'COMPLETED'">
-                                <img src="images/completed.png" style="display:inline; margin:0px;">
-                            </div>
-                            <div style="display:inline" v-if="mouseover_task_status == 'IN_PROGRESS'">
-                                <img src="images/inprogress.png" style="display:inline; margin:0px;">
-                            </div>
-
+                        <div style="display:inline" v-if="mouseover_task_status == 'NEW'">
+                            <img src="images/new_progress.png" style="display:inline; margin:0px;">
                         </div>
-                        <br><br>.<br><br>
-                        <div style="display: block; margin-left: 0vh; display: block;" align="center">
-                            <ul class=task align="center">
-                                <li align="center" id=task v-for="(value, key, index) in task[0]" v-on:mouseover="mouseover_task_details = task[0][key].title;
+                        <div style="display:inline" v-if="mouseover_task_status == 'COMPLETED'">
+                            <img src="images/completed.png" style="display:inline; margin:0px;">
+                        </div>
+                        <div style="display:inline" v-if="mouseover_task_status == 'IN_PROGRESS'">
+                            <img src="images/inprogress.png" style="display:inline; margin:0px;">
+                        </div>
+
+                    </div>
+                    <br><br>.<br><br>
+                    <div style="display: block; margin-left: 0vh; display: block;" align="center">
+                        <ul class=task align="center">
+                            <li align="center" id=task v-for="(value, key, index) in task[0]" v-on:mouseover="mouseover_task_details = task[0][key].title;
                                     mouseover_task_status = task[0][key].status;
                                     mouseover_task = key;
                                     mouseover_task_index = index;
@@ -173,53 +170,92 @@
                                                   selected_task_index = index;
                                                   setup_wb();
                                                   get_next_task(); " :class="'task-' + task[0][key].status">
-                                    {{index+1}}
-                                    <span id="" class="status" style="
-                                                      display: inline;
-                                                      position: relative;
-                                                      top: 35px;
-                                                      right: 0vh;
-                                                      left: 15px;
-                                                      margin: 0px;
-                                                      padding: 0px;" :class="'status-' + task[0][key].status">
+                                {{index+1}}
+                                <span class="status task-status" :class="'status-' + task[0][key].status">
                                     </span>
-                                </li>
-                            </ul>
-                        </div>
-                        <br>
+                            </li>
+                        </ul>
                     </div>
-                </center>
-                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                    <br>
                 </div>
+            </center>
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
             </div>
         </div>
-
-        <div id="info" class="w3-modal">
-            <div class="w3-modal-content">
-                <br>
-                <span onclick="document.getElementById('info').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close">&times;</span>
-                <center>
-                    <h2> Task Complete ! </h2>
-                    <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
-                    </div>
-                    <span style="font-family: 'Poiret One', cursive; font-weight:bold; font-size: 3.5vh"> {{selected_task}} <br> "{{selected_task_details}}" </span>
-                    <br><br>
-                    <img src="images/star.png">
-                    <img src="images/star.png">
-                    <img src="images/star.png">
-                </center>
-                <div class="w3-container w3-border-top w3-light-grey">
-                    <center><br>
-                        <button v-on:click="load_next_task" type="next" class="w3-button">Next >></button>
-                    </center>
-                </div>
-            </div>
-        </div>
-
-
     </div>
 
-    <div id="workspace" v-show="testings">
+    <div id="info" class="w3-modal">
+        <div class="w3-modal-content">
+            <br>
+            <span onclick="document.getElementById('info').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close">x</span>
+            <center>
+                <h2> Task Complete ! </h2>
+                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                </div>
+                <span style="font-family: 'Poiret One', cursive; font-weight:bold; font-size: 3.5vh"> {{selected_task}} <br> "{{selected_task_details}}" </span>
+                <br><br>
+                <img src="images/star.png">
+                <img src="images/star.png">
+                <img src="images/star.png">
+            </center>
+            <div class="w3-container w3-border-top w3-light-grey">
+                <center><br>
+                    <button v-on:click="load_next_task" type="next" class="w3-button">Next >></button>
+                </center>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="error" class="w3-modal">
+        <div class="w3-modal-content">
+            <br>
+            <span onclick="document.getElementById('error').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close">x</span>
+            <center>
+                <h2> Oops !</h2>
+                <div class="w3-container w3-border-top w3-padding-2 w3-light-grey">
+                </div>
+            <div style="width: 35%; display: inline-block;  vertical-align: middle;">
+                <span style="font-family: 'Poiret One', cursive; font-weight:bold; font-size: 3.5vh"> <span style="font-size: 5vh">Error</span><br>Something went wrong.<br>
+<!--
+                    <div class="tableblock">
+                    <table>
+                    <tr>
+                    <th>Error</th>
+                    <th>Details</th>
+                    </tr> 
+                        
+                    <tr>
+                    <td>Status</td>
+                    <td></td>
+                    </tr>
+                    </table>
+                    </div>
+-->
+            
+                    Please logout and try again. </span><br>
+              <a href="mailto:code@zilogic.com"><button type="report"> Report Error</button></a>
+            </div>
+                
+                
+            <div style="width:25%; display: inline-block; vertical-align: middle;">
+                <img width="200vw" src="images/labx_error.png">
+            </div>
+
+            </center>
+            <div class="w3-container w3-border-top w3-light-grey">
+                <center><br>
+                    <button v-on:click="logout();
+                                            " type="next" class="w3-button">Logout</button>
+                </center>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+    <div id="workspace" v-show="page">
 
         <ul>
             <li><a href="http://www.zilogic.com" target="_blank">Home</a></li>
@@ -229,7 +265,7 @@
                 <a class="active" v-on:click="logout">Logout</a></li>
             <li style="float:right"><a class="active" v-on:click="load_modules_page">Modules</a></li>
             <li style="float:right"><a class="active" v-on:click="select_module">Tasks</a></li>
-            <li style="float:right; cursor:progress"><a class="" v-on:click="select_module">
+            <li style="float:right; cursor:pointer"><a class="" v-on:click="select_module">
             <img src="images/task_title.png" style="width: 2.0vh; padding:0; margin: 0;"> Task {{ active_task_index + 1 }}: {{ active_task_title }}</a></li>
         </ul>
 
@@ -291,7 +327,7 @@
         <div class="sk-circle12 sk-circle"></div>
             </div>
                </a></li>
-                    <li class="menu" style="float:right;"><a v-on:click="wbench_save">Save
+                    <li class="menu" style="float:right;"><a id="save" v-on:click="wbench_save">Save
             <span id="save_status" class="status"></span>
             
             <div id="save_loader" class="sk-fading-circle">
@@ -380,10 +416,10 @@
                                 </tr>
 
                                 <tr v-if=update_build v-for="(value,key) in errors" align='center' v-on:click="
-             selected_error = errors[key].message;
-             selected_error_line = errors[key].line;
-             selected_error_index = key;
-             set_marker()">
+                                         selected_error = errors[key].message;
+                                         selected_error_line = errors[key].line;
+                                         selected_error_index = key;
+                                         set_marker()">
                                     <td>{{ errors[key].type }}</td>
                                     <td>{{ errors[key].filename }}</td>
                                     <td>{{ errors[key].line }}:{{ errors[key].col }}</td>
@@ -393,7 +429,11 @@
 
                         <div v-if=show_check_result>
                             <table v-if="update_check" class="check" v-for="(value,case_index) in check" style="width:100%" align='center'>
-                                <tr v-if="update_check" class="check" align='left' v-on:click="case_info[case_index]=!case_info[case_index]">
+                                <tr v-if="update_check" class="check" align='left' 
+                                    v-on:click="
+                                                case_info[case_index] = !case_info[case_index];
+                                                update_check=false;
+                                                update_check=true;">
                                     <th :class="check[case_index].status"><img v-if=case_info[case_index] src="images/up.png" width="18vh"><img v-if=!case_info[case_index] src="images/down.png" width="18vh"> {{ check[case_index].name }}</th>
                                     <th :class="check[case_index].status"></th>
                                     <th :class="check[case_index].status" align='right'>{{ check[case_index].status }}</th>
@@ -410,826 +450,20 @@
                                         <img v-if="check[case_index].steps[step_index].status == 'FAIL'" src="images/fail.png" width="18vh"> {{ check[case_index].steps[step_index].status }}</td>
                                 </tr>
                             </table>
-
                         </div>
                     </div>
-
                 </div>
             </center>
         </div>
-
     </div>
-    <script src="editor/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
-      const ws_url = 'wss://lab.zilogic.com/events';
-      const xmlrpc_url = 'https://lab.zilogic.com/rpc';
-        //------------------------------------- VUE JS ---------------------------------
-        //---------------------------- # Module # --------------------------------------
-
-        var modules = new Vue({
-            el: '#modules',
-            data: {
-                page: false,
-                websoc_state: false,
-                selected_module: '',
-                lcd_state: false,
-            },
-
-            methods: {
-                select_module(module) {
-                    this.selected_module = module;
-                    //-------------------------- # WebSoc # ------------------------
-                    if (this.websoc_state == false) {
-                        this.websoc_state = true;
-                        this.lcd_state = false;
-                        var ws = new WebSocket(ws_url);
-                        ws.onopen = function(event) {
-                            ws.send(login.$data.key);
-                        };
-                        ws.onmessage = function(event) {
-                            var wsevent_data = JSON.parse(event.data);
-
-                            if (wsevent_data.type == 'leds') {
-                                var object = document.getElementById("board");
-                                var svgDocument = object.contentDocument;
-                                var led = 'led' + wsevent_data.index;
-                                var svgled = svgDocument.getElementsByClassName(led);
-                                if (wsevent_data.value == true) {
-                                    svgled[0].style.fill = "#ff3232";
-                                } else if (wsevent_data.value == false) {
-                                    svgled[0].style.fill = "#b3b3b3";
-                                }
-                            }
-
-                            if (wsevent_data.type == 'terminal') {
-                                workspace.$data.printscreen = workspace.$data.printscreen + wsevent_data.append;
-                                $("#window").animate({
-                                    scrollTop: $("#terminalp").height()
-                                }, 10);
-                            }
-
-                            if (wsevent_data.type == 'lcd') {
-                                console.log(wsevent_data);
-                                var object = document.getElementById("board");
-                                var svgDocument = object.contentDocument;
-
-                                //if (this.lcd_state == false ) {
-                                var svgbl = svgDocument.getElementsByClassName("lcd_bl");
-                                svgbl[0].style.fill = "#afe9af";
-                                this.lcd_state = true;
-                                //}
-                                var lcd_data = wsevent_data.display;
-                                var cursor = wsevent_data.cursor;
-
-                                var data_lcd0 = wsevent_data.display[0].split("");
-                                var data_lcd1 = wsevent_data.display[1].split("");
-                                var data_lcd2 = wsevent_data.display[2].split("");
-                                var data_lcd3 = wsevent_data.display[3].split("");
-
-                                var arr_data = [data_lcd0, data_lcd1, data_lcd2, data_lcd3];
-                                arr_data[cursor[0]][cursor[1]] = '█';
-
-                                var lcd_l0 = Array.prototype.join.call(data_lcd0, "");
-                                var lcd_l1 = Array.prototype.join.call(data_lcd1, "");
-                                var lcd_l2 = Array.prototype.join.call(data_lcd2, "");
-                                var lcd_l3 = Array.prototype.join.call(data_lcd3, "");
-
-                                var svglcd = svgDocument.getElementsByClassName("lcd_l0");
-                                svglcd[0].textContent = lcd_l0;
-
-                                svglcd = svgDocument.getElementsByClassName("lcd_l1");
-                                svglcd[0].textContent = lcd_l1;
-
-                                svglcd = svgDocument.getElementsByClassName("lcd_l2");
-                                svglcd[0].textContent = lcd_l2;
-
-                                svglcd = svgDocument.getElementsByClassName("lcd_l3");
-                                svglcd[0].textContent = lcd_l3;
-                            }
-                        }
-                    }
-                    modal.get_tasks();
-                },
-
-                logout() {
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('logout', [login.$data.key]))).then(response => this.buffer)
-
-                    window.location.reload(true);
-                },
-            }
-        })
-
-        var modal = new Vue({
-            el: '#modal',
-            data: {
-                task_json: [{}],
-                task: '',
-                task_id: '',
-
-                mouseover_task: '-',
-                mouseover_task_details: '',
-                mouseover_task_status: '-',
-                mouseover_task_index: 0,
-
-                selected_task: '',
-                selected_task_status: '',
-                selected_task_details: 'Select Task',
-                selected_task_index: 0,
-                update_selected_task_info: false,
-
-                next_task: '',
-                next_task_status: '',
-                next_task_details: '',
-                next_task_index: 0,
-
-                total_tasks: 0,
-                tasks_list: 0,
-                refresh_task: true,
-            },
-            methods: {
-                task_status_color() {
-                    if (this.mouseover_task_status == 'NEW') {
-                        document.getElementById('task').style.background = 'red';
-                    }
-                },
-
-                restore_mouseover_task() {
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key, modules.$data.selected_module, modal.$data.mouseover_task]))).then(response => {
-                        console.log(response);
-                        if (modal.$data.mouseover_task == modal.$data.selected_task) {
-                            workspace.wb_load();
-                            this.update_selected_task_info = true;
-                        }
-                        modal.get_tasks();
-                    });
-                },
-
-                get_next_task() {
-                    if (this.selected_task_index < (this.total_tasks - 1)) {
-                        this.next_task_index = (this.selected_task_index + 1);
-                        this.next_task = this.tasks_list[this.next_task_index]
-                        this.next_task_status = this.task[0][this.next_task].status
-                        this.next_task_details = this.task[0][this.next_task].title
-                    } else {
-                        this.next_task = 'NONE';
-                    }
-                },
-
-                load_next_task() {
-                    if (this.next_task == 'NONE') {
-                        document.getElementById('info').style.display = 'none';
-                        workspace.load_modules_page();
-                    } else {
-                        this.selected_task_index = this.next_task_index;
-                        this.selected_task = this.next_task;
-                        this.selected_task_details = this.next_task_details;
-                        this.selected_task_status = this.next_task_status;
-
-                        this.mouseover_task_index = this.next_task_index;
-                        this.mouseover_task = this.next_task;
-                        this.mouseover_task_details = this.next_task_details;
-                        this.mouseover_task_status = this.next_task_status;
-
-                        this.get_next_task();
-                        workspace.wb_load();
-                        document.getElementById('info').style.display = 'none';
-                    }
-                },
-
-                get_tasks() {
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('get_tasks', [login.$data.key, modules.$data.selected_module]))).then(response => {
-                        console.log(response)
-                        this.task = response.body;
-                        var parser = new DOMParser();
-                        tasks = parser.parseFromString(this.task, "text/xml"); //xml-string to xml-object
-                        tasks = $.xmlrpc.parseDocument(tasks); //xml object -> json object
-                        this.task_json = tasks
-                        var sort_task = [{}]
-                        var keys = Object.keys(tasks[0]);
-                        this.tasks_list = keys;
-                        var len = keys.length;
-                        this.total_tasks = keys.length;
-                        var i;
-                        keys.sort();
-                        for (i = 0; i < len; i++) {
-                            k = keys[i];
-                            sort_task[0][k] = tasks[0][k];
-                        }
-                        this.task = sort_task;
-                        modal.$data.refresh_task = false;
-                        modal.$data.refresh_task = true;
-                        if (this.update_selected_task_info) {
-                            modal.$data.mouseover_task_index = modal.$data.selected_task_index;
-                            modal.$data.mouseover_task = modal.$data.selected_task;
-                            modal.$data.mouseover_task_details = modal.$data.task[0][modal.$data.selected_task].title;
-                            modal.$data.mouseover_task_status = modal.$data.task[0][modal.$data.selected_task].status;
-                            this.update_selected_task_info = false;
-                        }
-
-                        document.getElementById('id01').style.display = 'block';
-                    })
-                },
-
-                setup_wb() {
-                    document.getElementById('id01').style.display = 'none';
-                    login.$data.login_screen = false;
-                    modules.$data.page = false;
-                    workspace.$data.testings = true;
-                    workspace.wb_load();
-                    workspace.ace_settings();
-                },
-            }
-        })
-
-        //-------------------------- # Workspace # ------------------------        
-        var workspace = new Vue({
-            el: '#workspace',
-            data: {
-                editor: Object,
-                raw_code: '',
-                server_code: '',
-                code: '',
-                command: '',
-                pre_command: '',
-                printscreen: '',
-                testings: false, //FIXME
-                modules: false,
-                active_task: '',
-                active_task_title: '',
-                active_task_index: '',
-                active_file: '',
-                show_led: false,
-                plus: "Device",
-                obj_task: [{}],
-                task_file_list: [{}],
-                wbench_save_status: 0,
-                wbench_build_status: 0,
-                command_history: [],
-                h_counter: -1,
-                file_permission_info: {},
-                file_mime_info: {},
-                errors: [],
-                selected_error: '',
-                selected_error_line: 0,
-                selected_error_index: 0,
-                build: 0,
-                show_build_output: false,
-                show_task_objective: true,
-                show_check_result: false,
-                update_check: false,
-                update_build: false,
-                build_passed: false,
-                goal: "",
-                temp: "",
-                case_info: {
-                    0: true,
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                    6: false,
-                    7: false,
-                    8: false
-                },
-                obj: false,
-                marker: false,
-            },
-
-            watch: {
-                'code': function(val, oldVal) {
-                    if (this.code == this.server_code) {
-                        document.getElementById("save_status").style.background = "green";
-                        this.wbench_save_status = 1;
-                        document.getElementById("build_status").style.background = "#333"; //"grey";
-                        document.getElementById("build").style.color = "white";
-                    } else {
-                        document.getElementById("save_status").style.background = "red";
-                        document.getElementById("build_status").style.background = "#333";
-                        document.getElementById("check_status").style.background = "#333";
-                        document.getElementById("build").style.color = "#666";
-                        document.getElementById("check").style.color = "#666";
-                        this.wbench_save_status = 0; // needs saving
-                        this.wbench_build_status = 0; // needs build
-                        this.build_passed = false;
-                    }
-                }
-            },
-
-            mounted() {
-                this.ace_settings()
-                for (j in this.build) {
-                    if (this.build[j][1] != null) {
-                        this.errors.push(this.build[j][1]);
-                    }
-                }
-            },
-
-            methods: {
-                compute_args(args_list) {
-                    var full_args_list = ''
-                    for (index in args_list) {
-                        full_args_list = full_args_list + args_list[index]
-                        if (args_list.length > index + 1) {
-                            full_args_list = full_args_list + ', '
-                        }
-                    }
-                    return full_args_list
-                },
-
-                select_objective() {
-                    this.show_task_objective = true;
-                    this.show_build_output = false;
-                    this.show_check_result = false;
-                    document.getElementById("objective").style.background = "black";
-                    document.getElementById("build_output").style.background = "#333";
-                    document.getElementById("check_result").style.background = "#333";
-                    document.getElementById("goal").innerHTML = this.goal;
-                },
-
-                select_build_output() {
-                    document.getElementById("objective").style.background = "#333";
-                    document.getElementById("build_output").style.background = "black";
-                    document.getElementById("check_result").style.background = "#333";
-                    this.show_task_objective = false;
-                    this.show_check_result = false;
-                    this.show_build_output = true;
-                },
-
-                select_check_result() {
-                    document.getElementById("objective").style.background = "#333";
-                    document.getElementById("build_output").style.background = "#333";
-                    document.getElementById("check_result").style.background = "black";
-                    this.show_task_objective = false;
-                    this.show_build_output = false;
-                    this.show_check_result = true;
-                },
-
-                set_marker() {
-                    if (this.marker != false) {
-                        this.editor.getSession().removeMarker(this.marker)
-                        this.marker = false;
-                    }
-                    var range = ace.require(`ace/range`).Range;
-                    this.marker = this.editor.getSession().addMarker(new range(this.errors[this.selected_error_index].line - 1, 0,
-                        this.errors[this.selected_error_index].line - 1, 1), 'error', 'fullLine', false);
-                },
-
-                special_key_event() {
-                    if (event.keyCode == 67) {
-                        this.send_special_command('\x03') //ctrl+c
-                    }
-                    if (event.keyCode == 68) {
-                        this.send_special_command('\x04') //ctrl+d
-                    }
-                    if (event.keyCode == 90) {
-                        this.send_special_command('\x1A') //ctrl+z
-                    }
-                },
-
-                send_special_command(special_command) {
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_run_command', [login.$data.key, this.tobase64(special_command)]))).then(response => {})
-                },
-
-                tobase64(command) {
-                    base64 = btoa(command)
-                    var binary_string = atob(base64);
-                    var len = binary_string.length;
-                    var bytes = new Uint8Array(len);
-                    for (var i = 0; i < len; i++) {
-                        bytes[i] = binary_string.charCodeAt(i);
-                    }
-                    return bytes.buffer;
-                },
-
-                ace_clear_undo() {
-                    this.editor.getSession().setUndoManager(new ace.UndoManager());
-                },
-
-                ace_settings() {
-                    const lang = 'c_cpp'
-                    const theme = 'kuroir'
-                    this.editor = ace.edit("editor")
-                    this.editor.getSession().setMode(`ace/mode/${lang}`)
-                    this.editor.setTheme(`ace/theme/${theme}`)
-                    this.editor.setOptions({
-                        fontSize: "12.5pt",
-                        display: "none",
-                        useWorkers: false,
-                        showPrintMargin: true,
-                    });
-                    this.editor.on('change', () => {
-                        this.code = this.editor.getValue()
-                    })
-                    this.editor.commands.addCommand({
-                        name: 'wbench_save_shortcut',
-                        bindKey: {
-                            win: 'Ctrl-s',
-                            mac: 'Command-s'
-                        },
-                        exec: function(editor) {
-                            workspace.wbench_save();
-                        },
-                        readOnly: false
-                    })
-                    this.editor.commands.addCommand({
-                        name: 'wbench_build_shortcut',
-                        bindKey: {
-                            win: 'Ctrl-b',
-                            mac: 'Command-b'
-                        },
-                        exec: function(editor) {
-                            workspace.wbench_build();
-                        },
-                        readOnly: false
-                    })
-
-                    this.editor.commands.addCommand({
-                        name: 'wbench_check_shortcut',
-                        bindKey: {
-                            win: 'Ctrl-r',
-                            mac: 'Command-r'
-                        },
-                        exec: function(editor) {
-                            workspace.wbench_check();
-                        },
-                        readOnly: false
-                    })
-                    this.editor.$blockScrolling = Infinity;
-
-                },
-
-                update_board() {
-                    var object = document.getElementById("board");
-                    var svgDocument = object.contentDocument;
-                    var svgb1 = svgDocument.getElementsByClassName("led1");
-                    svgb1[0].style.fill = "#ff3232";
-                },
-
-                input_key() {
-                    var old = this.pre_command
-                    if (event.keyCode == 13)
-                        document.getElementById('bb8').click()
-                    if (event.keyCode == 38) {
-                        if (this.h_counter < this.command_history.length) {
-                            this.h_counter = this.h_counter + 1;
-                            this.command = this.command_history[this.h_counter]
-                        }
-                    }
-                    if (event.keyCode == 40) {
-                        if (this.h_counter > 0) {
-                            this.h_counter = this.h_counter - 1;
-                            this.command = this.command_history[this.h_counter]
-                        }
-                    }
-                },
-
-                select_module() {
-                    modal.get_tasks();
-                    modal.$data.update_selected_task_info = true;
-                },
-
-                load_modules_page() {
-                    login.$data.login_screen = false;
-                    modules.$data.page = true;
-                    workspace.$data.testings = false;
-                },
-
-                logout() {
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('logout', [login.$data.key]))).then(response => this.buffer)
-
-                    window.location.reload(true);
-                },
-
-                select_file(flag) {
-                    cursor = this.editor.getCursorPosition()
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_get_file_info_all', [login.$data.key]))).then(response => {
-                        console.log(response);
-                        file_info = response.body;
-                        var parser = new DOMParser();
-                        file_info = parser.parseFromString(file_info, "text/xml");
-                        file_info = $.xmlrpc.parseDocument(file_info);
-                        for (index in file_info[0]) {
-                            this.file_permission_info[file_info[0][index]["name"]] = file_info[0][index]["ro"]
-                            this.file_mime_info[file_info[0][index]["name"]] = file_info[0][index]["mime_type"]
-                        }
-                    })
-
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_read', [login.$data.key, this.active_file]))).then(response => {
-                        console.log(response)
-                        this.raw_code = response.body;
-                        this.xml_parser(this.raw_code);
-                        this.editor.setValue(this.code, 1);
-                        if (this.file_permission_info[this.active_file] == true) {
-                            this.editor.setReadOnly(true);
-                            this.editor.renderer.$cursorLayer.element.style.display = "none";
-                            this.editor.setOptions({
-                                highlightActiveLine: false,
-                                highlightGutterLine: false,
-                            });
-
-                        } else {
-                            this.editor.setReadOnly(false);
-                            this.editor.renderer.$cursorLayer.element.style.display = "inline-block";
-                            this.editor.setOptions({
-                                highlightActiveLine: true,
-                                highlightGutterLine: true,
-                            });
-                            this.editor.navigateLineStart()
-                            if (flag == false) {
-                                this.editor.gotoLine(cursor.row + 1, cursor.column, true);
-                            } else {
-                                this.editor.gotoLine(1, 0, true);
-                            }
-                        }
-                    })
-                    this.wbench_build_status = 0; // needs build
-                    document.getElementById("check").style.color = "#666";
-                },
-
-                wb_load() {
-                    document.getElementById("save_status").style.background = "#333";
-                    document.getElementById("build_status").style.background = "#333";
-                    document.getElementById("check_status").style.background = "#333";
-                    document.getElementById("build").style.color = "#666";
-                    document.getElementById("check").style.color = "#666";
-                    this.obj_task = modal.$data.task_json;
-                    this.task_file_list = this.obj_task[0][modal.$data.selected_task].files
-                    this.active_file = this.obj_task[0][modal.$data.selected_task].files[0]
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('open_task', [login.$data.key, modules.$data.selected_module, modal.$data.selected_task]))).then(
-                        response => {
-                            console.log(response)
-                            response = response.body;
-                            var goal, parser;
-                            parser = new DOMParser();
-                            goal = parser.parseFromString(response, "text/xml");
-                            goal = $.xmlrpc.parseDocument(goal);
-                            this.goal = goal;
-                            console.log(this.goal)
-                            document.getElementById("goal").innerHTML = this.goal
-
-                            this.active_task = modal.$data.selected_task;
-                            this.active_task_title = modal.$data.selected_task_details;
-                            this.active_task_index = modal.$data.selected_task_index;
-                            this.select_file();
-                            this.ace_clear_undo();
-                            this.select_objective();
-                            this.wb_reset();
-
-                            this.update_build = false;
-                            this.update_check = false;
-                            this.build_passed = false;
-                            this.show_check_result = false;
-                        })
-                },
-
-                wb_reset() {
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_reset', [login.$data.key]))).then(response => {
-                        console.log(response);
-                    })
-                },
-
-                xml_parser() {
-                    var text = this.raw_code;
-                    var parser, xmlDoc;
-                    parser = new DOMParser();
-                    xmlDoc = parser.parseFromString(text, "text/xml");
-                    this.server_code = xmlDoc.getElementsByTagName("string")[0].childNodes[0].nodeValue;
-                    this.code = this.server_code;
-                },
-
-                sendcommand() {
-                    this.ace_clear_undo();
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_run_command', [login.$data.key, this.tobase64(this.command + '\n')]))).then(response => {
-
-                        if (this.command != "") {
-                            this.command_history.unshift(this.command);
-                        }
-                        if (this.command_history.length > 20) {
-                            this.command_history = this.command_history.splice(0, 20);
-                        }
-                        this.h_counter = -1;
-                        this.command = "";
-                        $("#window").animate({
-                            scrollTop: $("#terminalp").height()
-                        }, 10);
-                    })
-                    if (this.command == "clear") {
-                        this.printscreen = '';
-                    }
-                    this.pre_command = this.command;
-                },
-
-                wbench_save() {
-                    this.editor.setReadOnly(true);
-                    document.getElementById("save_status").style.display = "none";
-                    document.getElementById("save_loader").style.display = "inline-block";
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_save', [login.$data.key, this.active_file, this.code]))).then(response => {
-                        document.getElementById("save_loader").style.display = "none";
-                        document.getElementById("save_status").style.background = "green";
-                        document.getElementById("save_status").style.display = "inline-block";
-                        this.wbench_save_status = 1;
-                        document.getElementById("build_status").style.background = "#333"; //"grey";
-                        document.getElementById("build").style.color = "white";
-                        document.getElementById("check_status").style.background = "#333"; //"grey";    
-                        this.select_file(false);
-                        this.editor.setReadOnly(false);
-                    })
-                },
-
-                wbench_build() {
-                    if (this.wbench_save_status == 0) {
-                        return
-                    }
-                    if (this.marker != false) {
-                        this.editor.getSession().removeMarker(this.marker)
-                        this.marker = false;
-                    }
-                    this.editor.setReadOnly(true);
-                    document.getElementById("build_status").style.display = "none";
-                    document.getElementById("build_loader").style.display = "inline-block";
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_build', [login.$data.key]))).then(response => {
-                        console.log(response);
-                        this.errors.length = 0;
-                        this.build.length = 0;
-                        var annotations = this.editor.getSession().getAnnotations();
-                        annotations.length = 0;
-                        this.update_build = false;
-
-                        var text = response.data;
-                        var parser, xmlDoc;
-                        parser = new DOMParser();
-                        xmlDoc = parser.parseFromString(text, "text/xml");
-                        var xml_build_errors = xmlDoc.getElementsByTagName("string")[0].childNodes[0].nodeValue;
-                        this.build = JSON.parse(xml_build_errors);
-
-                        var build_status = xmlDoc.getElementsByTagName("boolean")[0].childNodes[0].nodeValue;
-                        if (build_status == '1') {
-                            document.getElementById("build_status").style.display = "inline-block";
-                            document.getElementById("build_status").style.background = "green";
-                            document.getElementById("build_loader").style.display = "none";
-                            this.wbench_build_status = 1;
-                            this.build_passed = true;
-                            this.errors.pop(); //Vuejs - updates DOM only on array manuplation.
-                            this.update_build = true;
-                            this.select_build_output();
-                            this.editor.getSession().clearAnnotations()
-                            document.getElementById("check_status").style.background = "#333";
-                            document.getElementById("check").style.color = "white";
-                        } else if (build_status == '0') {
-                            document.getElementById("build_status").style.display = "inline-block";
-                            document.getElementById("build_status").style.background = "red";
-                            document.getElementById("build_loader").style.display = "none";
-                            document.getElementById("check_status").style.background = "#333";
-                            this.wbench_build_status = -1; //Build Failed, with errors.
-
-                            var error_icon = "error";
-                            for (errors in this.build) {
-                                if (this.build[errors][1] != null) {
-                                    this.errors.push(this.build[errors][1]);
-                                    if (this.build[errors][1].type != "error") {
-                                        error_icon = "warning";
-                                    }
-                                    annotations.push({
-                                        row: this.build[errors][1].line - 1,
-                                        column: 0,
-                                        text: this.build[errors][1].message,
-                                        type: error_icon,
-                                    });
-                                }
-                            }
-                            this.editor.getSession().setAnnotations(annotations);
-                            this.update_build = true;
-                            this.select_build_output();
-                            this.build_passed = false;
-                        }
-                        this.editor.setReadOnly(false);
-                    })
-                },
-
-                wbench_check() {
-                    if (this.wbench_build_status == 0) {
-                        return
-                    } else if (this.wbench_build_status == -1) {
-                        return
-                    }
-                    this.editor.setReadOnly(true);
-                    document.getElementById("check_status").style.display = "none";
-                    document.getElementById("check_loader").style.display = "inline-block";
-                    if (this.wbench_build_status == 1) {
-                        this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_check', [login.$data.key]))).then(response => {
-                            console.log(response);
-                            var text = response.data;
-                            var parser, xmlDoc, check_info;
-                            parser = new DOMParser();
-                            xmlDoc = parser.parseFromString(text, "text/xml");
-                            check_data = $.xmlrpc.parseDocument(xmlDoc); //xml object -> js-obj
-                            this.check = check_data[0][1];
-                            this.update_check = false;
-
-                            var check = xmlDoc.getElementsByTagName("boolean")[0].childNodes[0].nodeValue;
-                            if (check == '1') {
-                                document.getElementById("check_status").style.display = "inline-block";
-                                document.getElementById("check_status").style.background = "green";
-                                document.getElementById("check_loader").style.display = "none";
-                                document.getElementById('info').style.display = 'block';
-                                this.update_check = true;
-                                this.select_check_result();
-                            } else if (check == '0') {
-                                document.getElementById("check_status").style.display = "inline-block";
-                                document.getElementById("check_status").style.background = "red";
-                                document.getElementById("check_loader").style.display = "none";
-                                this.select_check_result();
-                                this.update_check = true;
-                            }
-                            this.editor.setReadOnly(false);
-                        })
-                    }
-                },
-
-                wbench_restore_task() {
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('restore_task', [login.$data.key, modules.$data.selected_module, modal.$data.selected_task]))).then(response => {
-                        console.log(response);
-                        workspace.wb_load();
-                        this.update_build = false;
-                        this.update_check = false;
-                    });
-                },
-
-                wbench_set_key(gpio_key, state) {
-                    var igpio_key = parseInt(gpio_key);
-                    var istate = parseInt(state);
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_set_key', [login.$data.key, igpio_key, istate]))).then(response => {
-                        console.log(response);
-                    });
-                },
-
-                wbench_keypad_press(keypad_id) {
-                    var ikeypad_id = parseInt(keypad_id);
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('wbench_keypad_press', [login.$data.key, ikeypad_id]))).then(response => {
-                        console.log(response);
-                    });
-                },
-
-            },
-        })
-
-        //--------------------------------- User Login -------------------------------- 
-        var login = new Vue({
-            el: '#login',
-            data: {
-                login: '',
-                pass: '',
-                key: '',
-                data_xmlrpc: '',
-                submit_button: true,
-                loading: false,
-                login_screen: true,
-                login_error: false,
-            },
-
-            methods: {
-                login_error_handle() {
-                    document.getElementById('password').style.border = '0.1vh solid #999'
-                    document.getElementById('username').style.border = '0.1vh solid #999'
-                },
-
-                submit() {
-                    this.submit_button = false;
-                    this.loading = true;
-                    this.$http.post(xmlrpc_url, (new XMLSerializer()).serializeToString($.xmlrpc.document('login', [this.login, this.pass]))).then(response => {
-                        this.data_xmlrpc = response.body;
-                        this.fn_parser()
-                    })
-                },
-
-                fn_parser() {
-                    var text = this.data_xmlrpc;
-                    var parser, xmlDoc;
-                    parser = new DOMParser();
-                    xmlDoc = parser.parseFromString(text, "text/xml");
-                    workspace.$data.code = this.text;
-                    this.key = xmlDoc.getElementsByTagName("string")[0].childNodes[0].nodeValue;
-                    if (this.key != "Authentication Failed") {
-                        this.loading = false;
-                        this.submit_button = true;
-                        this.login_screen = false;
-                        modules.$data.page = true;
-                        this.login_error = false;
-                        document.getElementById('password').style.border = '0.1vh solid #999'
-                        document.getElementById('username').style.border = '0.1vh solid #999'
-                    } else {
-                        this.login_error = true;
-                        this.pass = '';
-                        this.loading = false;
-                        this.submit_button = true;
-                        document.getElementById('password').style.border = '0.1vh solid darksalmon'
-                        document.getElementById('username').style.border = '0.1vh solid darksalmon'
-                    }
-                }
-            }
-        })
+        const ws_url = 'wss://lab.zilogic.com/events'
+        const xmlrpc_url = 'https://lab.zilogic.com/rpc'
     </script>
+    <script src="js/module.js"></script>
+    <script src="js/workspace.js"></script>
+    <script src="js/login.js"></script>
 </body>
 
 </html>
