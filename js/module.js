@@ -5,11 +5,16 @@
          websoc_state: false,
          selected_module: '',
          lcd_state: false,
+         display_name: '',
      },
 
      methods: {
          logout() {
              labx.logout()
+         },
+
+         open_mentor() {
+             labx.open_mentor()
          },
 
          select_module(module) {

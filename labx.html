@@ -65,6 +65,8 @@
             <li><a href="http://www.zilogic.com/blog/" target="_blank">Blog</a></li>
             <li><a href="http://www.zilogic.com/training" target="_blank">Training</a></li>
             <li style="float:right"><a class="active" v-on:click="logout">&nbsp;Logout</a></li>
+            <li v-on:click="open_mentor" style="float:right"><a href="mentor.html" target="_blank" style="padding: 0.99vh 0.5vh 0vh 1vh">
+                <img src="images/user_avatar.svg" width="36vw" style=" padding-bottom: 1vh; vertical-align: middle"> {{ display_name }}&nbsp;&nbsp;</a></li>
         </ul>
         <section id="three" class="wrapper align-center">
             <div class="inner">

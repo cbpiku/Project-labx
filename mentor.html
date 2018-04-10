@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Mentor Dashboard</title>
+    <script src="js/lib/vue.js"></script>
+    <script src="js/lib/vue-resource.js"></script>
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery.xmlrpc.js"></script>
+    <script src="js/lib/require.js"></script>
+    <script src="offline/offline.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
+    <link rel="stylesheet" href="offline/offline-theme-slide.css" />
+    <link rel="stylesheet" href="offline/offline-language-english.css" />
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    
+</head>
+
+<body>
+    <div id="labx">
+    <ul class="mentor_title">
+        <li>
+            <a style="padding: 0.6vh 0.5vh 0vh 1vh">  
+                <img src="images/analytics.svg" width="36vw" style=" padding-bottom: 1vh; vertical-align: middle"> 
+                    Mentor Dashboard
+            </a>
+        </li>
+        <li style="float:right"><a class="active" v-on:click="logout">&nbsp;Logout</a></li>
+    </ul>
+    </div>
+    
+    <div id="mentor">
+        <div v-if="page_loading">
+            <center>
+            <div class="loader"></div>
+            <h3>Loading</h3>  
+            </center>
+        </div>
+        
+        <div v-show="!page_loading">
+            
+        <!-- User Navigation -->    
+        <div v-if="show_user_list" style="background-color: lightgray; overflow: hidden; width: 17%; float:left" align="center">
+            <div v-on:click="" class="selected_user">    
+                <img src="images/user_profile.svg" width="200vw">
+                <br>
+                <span>
+                {{ selected_user }}
+                    </span><br><br>
+            </div>
+
+        <img src="images/search.svg" width="30vw" style=" padding-bottom: 1.1vh; vertical-align: middle">
+            <input id="search" v-model="search_user"  type="search2" placeholder="Username" style="width:80%">
+            <div class="user_list_parent">
+            <div id="user_list" class="user_list">
+                <span v-on:click="toggle_user = value.id; select_user(value.name)" 
+                      v-for="(value, key, index) in filtered_users"
+                      :class="{selected:value.id == toggle_user}"  
+                      ><img src="images/user_profile.svg" width="25vw">
+                {{ value.name }}
+                    </span>
+            </div>
+            </div>    
+        </div>
+        <!-- User Navigation  Ends -->
+
+
+        <!-- User Modules -->    
+        <div v-if="show_modules_list" style=" background-color: lightgray; overflow: hidden; width: 17%; float:left" align="center">
+            <div v-on:click="" class="selected_user">    
+                <img src="images/modules.svg" width="200vw">
+                <br>
+                <span>
+                {{ selected_user_module }}
+                    </span><br><br>
+            </div>
+
+            <img src="images/search.svg" width="30vw" style=" padding-bottom: 1.1vh; vertical-align: middle">
+            <input id="search"  v-model="search_module" type="search2" placeholder="Username" style="width:80%">
+            <div class="user_list_parent">
+            <div  id="user_modules" class="user_list">
+                <span v-on:click="toggle_module = value.id; select_user_module(value.module)" 
+                      v-for="(value, key, index) in filtered_user_module_list"
+                      :class="{selected:value.id == toggle_module}">
+                <img src="images/modules.svg" width="25vw">
+                {{ value.module }}
+                </span>
+            </div>
+            </div>    
+        </div>
+        <!-- User Modules -->    
+
+
+
+        <!-- Task Files -->    
+        <div style="background-color: lightgray; overflow: hidden; width: 17%; float:left" align="center">
+            <div v-on:click="" class="selected_user">    
+                <img src="images/task_list.svg" width="200vw">
+                <br>
+                <span>
+                {{ selected_user_task }}
+                    </span><br><br>
+            </div>
+
+        <img src="images/search.svg" width="30vw" style=" padding-bottom: 1.1vh; vertical-align: middle">
+            <input id="search" v-model="search_task"  type="search2" placeholder="Username" style="width:80%">
+            <div class="user_list_parent">
+            <div id="user_task" class="user_list">
+                <span v-on:click="toggle_task = value.task; select_user_task(value.task)"
+                      v-for="(value, key, index) in filtered_user_tasks_list"
+                      :class="{selected:value.task == toggle_task}">
+                    <img src="images/task_list.svg" width="25vw">
+                {{ value.task }}
+                    </span>
+            </div>
+            </div>    
+        </div>
+        <!-- Task Files Ends -->
+
+        <!-- Mentor Editor -->        
+        <!-- Mentor Editor Menu -->
+        <div style="width: 48.5%; float:right; background-color: lightgray;" >    
+        <div>
+            <ul class=mentor_editor_menu>
+                <li class="menu" style="float:right;"><a id="save" v-on:click="refresh">Refresh</a></li>
+                    <div class="dropdown">
+                        <button class="dropbtn">File <i class="fa fa-caret-down"></i></button>
+                        <div class="dropdown-content">
+                                <li v-for="user_file in user_file_list" v-on:click=" select_user_file(user_file)">
+                                    <center>{{ user_file }}</center>
+                                </li>
+                            </div>
+                        </div>
+                        <li class="filename" style="float:left"><a style="cursor: default" v-on:click="">
+                        {{selected_user_task}}/{{ active_user_file }}</a></li>
+            </ul>
+            </div>    
+        <!-- Mentor Editor Menu Ends -->
+        <!-- Ace Editor -->
+        <div id="mentor_editor"></div>    
+        </div>
+        <!-- Ace Editor Ends-->
+        <!-- Mentor Editor Ends -->    
+    
+    </div>
+        
+        
+    <!-- Default Error Modal -->     
+    <div id="error" class="w3-modal">
+        <div class="w3-modal-content">
+            <br>
+            <span onclick="document.getElementById('error').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close">x</span>
+            <center>
+                <h2> Oops !</h2>
+                <div class="w3-container w3-border-top w3-padding-2 w3-light-grey">
+                </div>
+            <div style="width: 35%; display: inline-block;  vertical-align: middle;">
+                <span style="font-family: 'Poiret One', cursive; font-weight:bold; font-size: 3.5vh"> <span style="font-size: 5vh">Error</span><br>Something went wrong.<br>
+                    
+                    Please logout and try again. </span><br>
+              <a href="mailto:code@zilogic.com"><button type="report"> Report Error</button></a>
+            </div>
+                
+                
+            <div style="width:25%; display: inline-block; vertical-align: middle;">
+                <img width="200vw" src="images/labx_error.png">
+            </div>
+
+            </center>
+            <div class="w3-container w3-border-top w3-light-grey">
+                <center><br>
+                    <button v-on:click="logout();
+                                            " type="next" class="w3-button">Logout</button>
+                </center>
+            </div>
+        </div>
+    </div>
+    <!-- Default Error Modal Endes -->   
+    </div>
+    <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        const ws_url = 'wss://lab.zilogic.com/events'
+        const xmlrpc_url = 'https://cors-anywhere.herokuapp.com/https://lab.zilogic.com/rpc'
+    </script>
+    <script src="js/mentor2.js"></script>
+</body>
+</html>

@@ -29,7 +29,7 @@ var labx = new Vue({
         },
 
         logout() {
-            labx.xmlrpc('logout', this.on_logout_event, this.on_logout_event, this.key)
+            labx.xmlrpc('logout', this.on_logout_event, this.on_logout_event, login.$data.key)
         },
 
         on_logout_event() { // Close all Pages/err_msg & switch to login page.
@@ -37,6 +37,9 @@ var labx = new Vue({
             workspace.$data.page = false;
             login.$data.login_screen = true;
             document.getElementById('error').style.display = 'none';
+        },
+        open_mentor() {
+            /* TODO */
         },
     }
 })
@@ -86,6 +89,9 @@ var login = new Vue({
             this.login_screen = false;
             modules.$data.page = true;
             this.key = response.toString();
+            localStorage.setItem('login_id', this.login_id);
+            localStorage.setItem('key', this.key);
+            modules.$data.display_name = this.login_id[0].toUpperCase() + this.login_id.slice(1);
             this.login_clear();
         },
 
