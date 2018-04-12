@@ -1227,6 +1227,10 @@ ol.arabic li p {
 }
 
 /* Mentor */
+[v-cloak] {
+    display: none;
+  }
+
 .user, .selected_user {
 display: inline-block;
 min-width: 28vh;
