@@ -39,7 +39,7 @@ var labx = new Vue({
             document.getElementById('error').style.display = 'none';
         },
         open_mentor() {
-            /* TODO */
+            window.open('mentor.html', '_blank');
         },
     }
 })

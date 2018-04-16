@@ -26,8 +26,9 @@ var labx = new Vue({
             document.getElementById('error').style.display = 'block';
         },
         
-        logout() {
-            labx.xmlrpc('logout', this.on_logout_event, this.on_logout_event, this.key)
+        close() {
+            window.open('', '_self', '')
+            window.close()
         },
 
         do_nothing() {
@@ -202,8 +203,8 @@ var mentor = new Vue({
           this.select_user_file(this.active_user_file)  
         },
         
-        logout() {
-            labx.logout()
+        close() {
+            labx.close()
         }
     }
 })

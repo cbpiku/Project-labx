@@ -30,7 +30,7 @@
                     Mentor Dashboard
             </a>
         </li>
-        <li style="float:right"><a class="active" v-on:click="logout">&nbsp;Logout</a></li>
+        <li style="float:right"><a class="active" v-on:click="close">&nbsp;Close</a></li>
     </ul>
     </div>
     
@@ -174,8 +174,8 @@
             </center>
             <div class="w3-container w3-border-top w3-light-grey">
                 <center><br>
-                    <button v-on:click="logout();
-                                            " type="next" class="w3-button">Logout</button>
+                    <button v-on:click="close();
+                                            " type="next" class="w3-button">Close</button>
                 </center>
             </div>
         </div>
