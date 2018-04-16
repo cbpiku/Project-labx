@@ -46,6 +46,8 @@ var workspace = new Vue({
         obj: false,
         marker: false,
         restore_editor_cursor: false,
+        editor_resize_button: '⇲',
+        editor_resize_fullscreen: false
     },
 
     watch: {
@@ -572,6 +574,21 @@ var workspace = new Vue({
             workspace.wb_load()
             this.update_build = false
             this.update_check = false
+        },
+
+        editor_resize() {
+            if (this.editor_resize_fullscreen == false) {
+                this.editor_resize_button = '⇱'
+                document.getElementById("editor_window").style.height = "87vh"
+                document.getElementById("output").style.display = "none"
+                this.editor_resize_fullscreen = true
+            } else {
+                this.editor_resize_button = '⇲'
+                document.getElementById("editor_window").style.height = "46vh"
+                document.getElementById("output").style.display = "block"
+                this.editor_resize_fullscreen = false
+            }
+            this.editor.resize()
         },
 
         wbench_set_key(gpio_key, state) {

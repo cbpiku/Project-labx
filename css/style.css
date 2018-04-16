@@ -964,6 +964,7 @@ ul li.task:hover {
     word-wrap: break-all;
 /*  overflow-y: hidden;
     overflow-x: hidden;  */
+    display: block;
 }
 
 #output::-webkit-scrollbar {
