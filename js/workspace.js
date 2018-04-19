@@ -216,7 +216,7 @@ var workspace = new Vue({
 
         input_key() {
             if (event.keyCode == 13)
-                document.getElementById('bb8').click()
+                document.getElementById('send_command_button').click()
             if (event.keyCode == 38) { //Up-Arrow-Key
                 if (this.history_counter < this.command_history.length) {
                     this.history_counter = this.history_counter + 1
@@ -403,6 +403,8 @@ var workspace = new Vue({
         },
 
         sendcommand() {
+            document.getElementById("command").disabled = true
+            document.getElementById("send_command_button").style.color = "#444";
             labx.xmlrpc('wbench_run_command', this.on_sendcommand_success, null, login.$data.key, this.tobase64(this.command + '\n'))
             if (this.command == "clear") {
                 this.printscreen = ''
@@ -421,6 +423,9 @@ var workspace = new Vue({
             $("#window").animate({
                 scrollTop: $("#terminalp").height()
             }, 10)
+            document.getElementById("command").disabled = false
+            document.getElementById("send_command_button").style.color = "white"
+            document.getElementById("command").focus()
         },
 
         clear_editor_marker() {

@@ -279,7 +279,7 @@
             </div>
             <center>
                 <input id="command" v-model="command" type="command" placeholder="command" onkeydown="workspace.input_key()" @keydown.ctrl.67="special_key_event" @keydown.ctrl.68="special_key_event" @keydown.ctrl.90="special_key_event">
-                <button id="bb8" type="send" v-on:click="sendcommand()">Send</button>
+                <button id="send_command_button" type="send" v-on:click="sendcommand()">Send</button>
                 <button type="wb_reset" v-on:click="wb_reset">Reset</button>
             </center>
             <center>
